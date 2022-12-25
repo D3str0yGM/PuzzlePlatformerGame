@@ -6,13 +6,14 @@ using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Controller")]
+    [Header("Controller")] // *************************** Player Controller 3D ************************ 
     [SerializeField] float speed;
     [SerializeField] float JumpForce = 5f;
     float horizontal;
     float vertical;
     float SmoothTurnTime = 0.1f;
     float CurrentTurnAngle;
+    float Angle;
     Vector3 Direction;
     Rigidbody rb;
     Animator anim;
@@ -20,6 +21,16 @@ public class PlayerController : MonoBehaviour
     bool changed2D = false;
     bool lockMovement = false;
     [SerializeField] GameObject playerModel;
+
+
+    // *************************** Player Controller 3D ************************ 
+    [Header("Player2D Controller")]
+    [SerializeField] GameObject Player2D;
+    float horizontal2D;
+    float vertical2D;
+    [SerializeField] float speed2D;
+    [SerializeField] float JumpForce2D;
+    private bool _FacingRight = true;
 
 
     void Start()
@@ -39,24 +50,50 @@ public class PlayerController : MonoBehaviour
         {
             if (Physics.Raycast(transform.position + (Vector3.up * .1f), transform.forward, out RaycastHit hit, 1))
             {
+                rb.freezeRotation = true; // FREEZE ROTATION WHEN HIT THE WALL
                 lockMovement = true;
+                Angle = 0f;
                 JumpForce = 0f;
                 speed = 0f;
-
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.01f)).Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.5f, 0.3f).SetEase(Ease.InBack).OnComplete(() =>
+                if (hit.transform.rotation.y > 0f) //deydiyimiz divarin rotationu(y) 1den boyukduse onda onun rotation deyeri qeder rotate etsin
                 {
-                    ParticleManager.instance.PlaySparkle();
-                    changed2D = true;
+                    sequence.Append(transform.DORotate(new Vector3(0f, 180f + hit.transform.rotation.y, 0f), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.01f))
+                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.5f, 0.3f).SetEase(Ease.InBack)
+                    .OnComplete(() =>
+                    {
+                        ParticleManager.instance.PlaySparkle();
+                        changed2D = true;
+                        transform.DORotate(new Vector3(0, 0, 0), 0f);
+                        Player2D.SetActive(true);
+                        sequence.Kill();
 
 
-                }));
+                    }));
+                }
+                else //deydiyimiz divarin rotationu 0disa(float)
+                {
+                    sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.01f))
+                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.5f, 0.3f).SetEase(Ease.InBack)
+                    .OnComplete(() =>
+                    {
+                        ParticleManager.instance.PlaySparkle();
+                        changed2D = true;
+                        transform.DORotate(new Vector3(0, 0, 0), 0f); //deyenden sonra player parentinin 0 olmasi ucun
+                        Player2D.SetActive(true);
+                        sequence.Kill();
+
+
+                    }));
+
+                }
+
             }
         }
     }
     private void FixedUpdate()
     {
-        if (!lockMovement)
+        if (!lockMovement) // 3D controller
         {
             horizontal = Input.GetAxis("Horizontal");
             vertical = Input.GetAxis("Vertical");
@@ -64,13 +101,20 @@ public class PlayerController : MonoBehaviour
             if (Direction.magnitude > 0.01f)
             {
                 float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
-                float Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, SmoothTurnTime);
+                Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, SmoothTurnTime);
                 transform.rotation = Quaternion.Euler(0, Angle, 0);
                 rb.MovePosition(transform.position + (Direction * speed * Time.deltaTime));
             }
         }
 
+
+
+        // horizontal2D = Input.GetAxis("Horizontal");
+        // transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
+
     }
+
+
 
     private void OnCollisionEnter(Collision other)
     {
