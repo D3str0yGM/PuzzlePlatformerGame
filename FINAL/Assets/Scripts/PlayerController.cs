@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-
+using Particle;
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,9 +18,9 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     Animator anim;
     bool isGround;
-    bool changed2D = false;
     bool lockMovement = false;
     [SerializeField] GameObject playerModel;
+    [SerializeField] LayerMask layerMask;
 
 
     // *************************** Player Controller 3D ************************ 
@@ -30,7 +30,10 @@ public class PlayerController : MonoBehaviour
     float vertical2D;
     [SerializeField] float speed2D;
     [SerializeField] float JumpForce2D;
-    private bool _FacingRight = true;
+    private bool facingRight = true;
+    bool is2D = false;
+    bool Wall90;
+
 
 
     void Start()
@@ -46,48 +49,57 @@ public class PlayerController : MonoBehaviour
             // anim.SetTrigger("Jump");
             isGround = false;
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
+        if (Input.GetKeyDown(KeyCode.E) && !is2D)
         {
-            if (Physics.Raycast(transform.position + (Vector3.up * .1f), transform.forward, out RaycastHit hit, 1))
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 5f, layerMask))
             {
-                rb.freezeRotation = true; // FREEZE ROTATION WHEN HIT THE WALL
+
                 lockMovement = true;
                 Angle = 0f;
-                JumpForce = 0f;
+                // JumpForce = 0f;
                 speed = 0f;
+
+
                 Sequence sequence = DOTween.Sequence();
-                if (hit.transform.rotation.y > 0f) //deydiyimiz divarin rotationu(y) 1den boyukduse onda onun rotation deyeri qeder rotate etsin
+                if (hit.transform.rotation.y > 0f)
                 {
-                    sequence.Append(transform.DORotate(new Vector3(0f, 180f + hit.transform.rotation.y, 0f), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.01f))
-                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.5f, 0.3f).SetEase(Ease.InBack)
+                    sequence.Append(transform.DORotate(new Vector3(0f, 180f + hit.transform.eulerAngles.y, 0f), 0.4f)).Insert(0.4f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.1f))
+                    .Insert(0.4f, transform.DOMoveX(transform.position.x + 0.55f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
-                        ParticleManager.instance.PlaySparkle();
-                        changed2D = true;
-                        transform.DORotate(new Vector3(0, 0, 0), 0f);
+                        rb.freezeRotation = true; //divara deyende rotate problemini duzeldir
+                        rb.constraints = RigidbodyConstraints.FreezePositionX;
+
+                        ParticleManager.instance.Play("Sparkle");
+
+                        is2D = true;
                         Player2D.SetActive(true);
                         sequence.Kill();
+                        Wall90 = true;
+                        Debug.Log("NOT 0 degree wall");
 
 
                     }));
                 }
-                else //deydiyimiz divarin rotationu 0disa(float)
+                else  //wall rotation 0;
                 {
                     sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.01f))
-                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.5f, 0.3f).SetEase(Ease.InBack)
+                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.55f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
-                        ParticleManager.instance.PlaySparkle();
-                        changed2D = true;
-                        transform.DORotate(new Vector3(0, 0, 0), 0f); //deyenden sonra player parentinin 0 olmasi ucun
+                        rb.freezeRotation = true;
+                        // rb.constraints = RigidbodyConstraints.FreezePositionZ;
+
+                        is2D = true;
                         Player2D.SetActive(true);
                         sequence.Kill();
-
+                        ParticleManager.instance.Play("Sparkle");
+                        Debug.Log("0 degree wall");
 
                     }));
-
                 }
-
             }
         }
     }
@@ -106,12 +118,38 @@ public class PlayerController : MonoBehaviour
                 rb.MovePosition(transform.position + (Direction * speed * Time.deltaTime));
             }
         }
+        if (is2D)
+        {
+            if (Wall90)
+            {
+                horizontal2D = Input.GetAxis("Horizontal");
+                transform.position += new Vector3(0, 0, (horizontal2D * speed2D) * -1) * Time.deltaTime;
 
+                if (horizontal2D > 0 && facingRight)
+                {
+                    FlipX();
+                }
+                if (horizontal2D < 0 && !facingRight)
+                {
+                    FlipX();
+                }
+            }
+            else
+            {
+                horizontal2D = Input.GetAxis("Horizontal");
+                transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
 
+                if (horizontal2D > 0 && facingRight)
+                {
+                    FlipX();
+                }
+                if (horizontal2D < 0 && !facingRight)
+                {
+                    FlipX();
+                }
+            }
 
-        // horizontal2D = Input.GetAxis("Horizontal");
-        // transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
-
+        }
     }
 
 
@@ -125,9 +163,19 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionStay(Collision other)
     {
-        if (other.transform.CompareTag("Wall") && changed2D)
+        if (other.transform.CompareTag("Wall") && is2D)
         {
             playerModel.SetActive(false);
         }
+    }
+
+    public void FlipX()
+    {
+        Vector3 currentScale = Player2D.transform.localScale;
+        currentScale.x *= -1;
+        Player2D.transform.localScale = currentScale;
+        facingRight = !facingRight;
+        Debug.Log("flip x");
+
     }
 }
