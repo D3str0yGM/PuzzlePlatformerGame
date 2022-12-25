@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask layerMask;
 
 
-    // *************************** Player Controller 3D ************************ 
+    // *************************** Player Controller 2D ************************ 
     [Header("Player2D Controller")]
     [SerializeField] GameObject Player2D;
     float horizontal2D;
@@ -49,11 +49,11 @@ public class PlayerController : MonoBehaviour
             // anim.SetTrigger("Jump");
             isGround = false;
         }
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
+        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1f, Color.white);
         if (Input.GetKeyDown(KeyCode.E) && !is2D)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 5f, layerMask))
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 1f, layerMask))
             {
 
                 lockMovement = true;
@@ -66,42 +66,55 @@ public class PlayerController : MonoBehaviour
                 if (hit.transform.rotation.y > 0f)
                 {
                     sequence.Append(transform.DORotate(new Vector3(0f, 180f + hit.transform.eulerAngles.y, 0f), 0.4f)).Insert(0.4f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.1f))
-                    .Insert(0.4f, transform.DOMoveX(transform.position.x + 0.55f, 0.3f).SetEase(Ease.InBack)
+                    .Insert(0.4f, transform.DOMoveX(transform.position.x + 0.5f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
+                        playerModel.SetActive(false);
                         rb.freezeRotation = true; //divara deyende rotate problemini duzeldir
-                        rb.constraints = RigidbodyConstraints.FreezePositionX;
-
                         ParticleManager.instance.Play("Sparkle");
-
                         is2D = true;
                         Player2D.SetActive(true);
-                        sequence.Kill();
                         Wall90 = true;
-                        Debug.Log("NOT 0 degree wall");
+                        rb.constraints = RigidbodyConstraints.FreezePositionX;
+                        sequence.Kill();
+
 
 
                     }));
                 }
                 else  //wall rotation 0;
                 {
-                    sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.01f))
-                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.55f, 0.3f).SetEase(Ease.InBack)
+                    sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.04f), 0.05f))
+                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.5f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
                         rb.freezeRotation = true;
-                        // rb.constraints = RigidbodyConstraints.FreezePositionZ;
-
+                        rb.constraints = RigidbodyConstraints.FreezePositionZ;
+                        playerModel.SetActive(false);
                         is2D = true;
                         Player2D.SetActive(true);
-                        sequence.Kill();
                         ParticleManager.instance.Play("Sparkle");
-                        Debug.Log("0 degree wall");
+                        Wall90 = false;
+                        sequence.Kill();
 
                     }));
                 }
             }
         }
+
+
+        if (Input.GetKeyDown(KeyCode.E) && is2D)
+        {
+            lockMovement = false;
+            Angle = 1f;
+            speed = 5f;
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(transform.DOMoveZ(transform.position.z-1f,0.5f));
+        }
+
+
+
+
     }
     private void FixedUpdate()
     {
@@ -161,14 +174,6 @@ public class PlayerController : MonoBehaviour
             isGround = true;
         }
     }
-    private void OnCollisionStay(Collision other)
-    {
-        if (other.transform.CompareTag("Wall") && is2D)
-        {
-            playerModel.SetActive(false);
-        }
-    }
-
     public void FlipX()
     {
         Vector3 currentScale = Player2D.transform.localScale;
