@@ -36,7 +36,6 @@ namespace Particle
             ParticleUnit particle = System.Array.Find(particles, p => p.Name == name);
             if (particle == null)
                 return;
-            Debug.Log("lakaciki");
             particle.ParticleEffect.Play();
         }
     }

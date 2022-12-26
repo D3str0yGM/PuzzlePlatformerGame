@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Particle;
-
+using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     [Header("Controller")] // *************************** Player Controller 3D ************************ 
@@ -19,13 +19,13 @@ public class PlayerController : MonoBehaviour
     Animator anim;
     bool isGround;
     bool lockMovement = false;
-    [SerializeField] GameObject playerModel;
+    [SerializeField] GameObject player3D;
     [SerializeField] LayerMask layerMask;
 
 
     // *************************** Player Controller 2D ************************ 
     [Header("Player2D Controller")]
-    [SerializeField] GameObject Player2D;
+    [SerializeField] GameObject player2D;
     float horizontal2D;
     float vertical2D;
     [SerializeField] float speed2D;
@@ -66,14 +66,14 @@ public class PlayerController : MonoBehaviour
                 if (hit.transform.rotation.y > 0f)
                 {
                     sequence.Append(transform.DORotate(new Vector3(0f, 180f + hit.transform.eulerAngles.y, 0f), 0.4f)).Insert(0.4f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.1f))
-                    .Insert(0.4f, transform.DOMoveX(transform.position.x + 0.5f, 0.3f).SetEase(Ease.InBack)
+                    .Insert(0.4f, transform.DOMoveX(transform.position.x + 0.55f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
-                        playerModel.SetActive(false);
+                        player3D.SetActive(false);
                         rb.freezeRotation = true; //divara deyende rotate problemini duzeldir
                         ParticleManager.instance.Play("Sparkle");
                         is2D = true;
-                        Player2D.SetActive(true);
+                        player2D.SetActive(true);
                         Wall90 = true;
                         rb.constraints = RigidbodyConstraints.FreezePositionX;
                         sequence.Kill();
@@ -85,14 +85,14 @@ public class PlayerController : MonoBehaviour
                 else  //wall rotation 0;
                 {
                     sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.04f), 0.05f))
-                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.5f, 0.3f).SetEase(Ease.InBack)
+                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.55f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
                         rb.freezeRotation = true;
-                        rb.constraints = RigidbodyConstraints.FreezePositionZ;
-                        playerModel.SetActive(false);
+                        // rb.constraints = RigidbodyConstraints.FreezePositionZ;
+                        player3D.SetActive(false);
                         is2D = true;
-                        Player2D.SetActive(true);
+                        player2D.SetActive(true);
                         ParticleManager.instance.Play("Sparkle");
                         Wall90 = false;
                         sequence.Kill();
@@ -105,12 +105,51 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E) && is2D)
         {
-            lockMovement = false;
-            Angle = 1f;
-            speed = 5f;
-            Sequence sequence = DOTween.Sequence();
-            sequence.Append(transform.DOMoveZ(transform.position.z-1f,0.5f));
+            if (Wall90)
+            {
+                Sequence sequence = DOTween.Sequence();
+                sequence.Append(transform.DOMoveX(transform.position.x - 5f, 0.3f))
+                .Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
+                {
+                    Wall90 = false;
+                    player2D.SetActive(false);
+                    is2D = false;
+                    // rb.freezeRotation = false;
+                    lockMovement = false;
+                    rb.constraints = RigidbodyConstraints.None;
+
+                    player3D.SetActive(true);
+                    Angle = 1f;
+                    speed = 5f;
+                    sequence.Kill();
+
+                });
+            }
+            else
+            {
+                Sequence sequence = DOTween.Sequence();
+                sequence.Append(transform.DOMoveZ(transform.position.z - 1f, 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
+                {
+                    Wall90 = false;
+                    player2D.SetActive(false);
+                    is2D = false;
+                    rb.freezeRotation = false;
+                    lockMovement = false;
+                    player3D.SetActive(true);
+                    Angle = 1f;
+                    speed = 5f;
+                    sequence.Kill();
+
+                });
+            }
+
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(0);
+        }
+
 
 
 
@@ -118,8 +157,12 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (!lockMovement) // 3D controller
+        if (!lockMovement && !is2D) // 3D controller
         {
+            Debug.Log("3D controller working");
+            Debug.Log("H: " + horizontal);
+            Debug.Log("V: " + vertical);
+
             horizontal = Input.GetAxis("Horizontal");
             vertical = Input.GetAxis("Vertical");
             Direction = new Vector3(horizontal, 0, vertical);
@@ -133,8 +176,11 @@ public class PlayerController : MonoBehaviour
         }
         if (is2D)
         {
+            Debug.Log("is 2D working");
             if (Wall90)
             {
+                Debug.Log("wall 90 Working"); //90 derece divarda gezirik
+
                 horizontal2D = Input.GetAxis("Horizontal");
                 transform.position += new Vector3(0, 0, (horizontal2D * speed2D) * -1) * Time.deltaTime;
 
@@ -149,7 +195,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                horizontal2D = Input.GetAxis("Horizontal");
+                horizontal2D = Input.GetAxis("Horizontal"); //0 derece divarda gezirik
                 transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
 
                 if (horizontal2D > 0 && facingRight)
@@ -176,11 +222,9 @@ public class PlayerController : MonoBehaviour
     }
     public void FlipX()
     {
-        Vector3 currentScale = Player2D.transform.localScale;
+        Vector3 currentScale = player2D.transform.localScale;
         currentScale.x *= -1;
-        Player2D.transform.localScale = currentScale;
+        player2D.transform.localScale = currentScale;
         facingRight = !facingRight;
-        Debug.Log("flip x");
-
     }
 }
