@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using Particle;
 using UnityEngine.SceneManagement;
+using CASP.CameraManager;
 public class PlayerController : MonoBehaviour
 {
     [Header("Controller")] // *************************** Player Controller 3D ************************ 
@@ -69,6 +70,7 @@ public class PlayerController : MonoBehaviour
                     .Insert(0.4f, transform.DOMoveX(transform.position.x + 0.55f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
+                        CameraManager.instance.OpenCamera("2D 90 Degree Cam", 1, CameraEaseStates.Linear);
                         player3D.SetActive(false);
                         rb.freezeRotation = true; //divara deyende rotate problemini duzeldir
                         ParticleManager.instance.Play("Sparkle");
@@ -88,6 +90,7 @@ public class PlayerController : MonoBehaviour
                     .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.55f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
+                        CameraManager.instance.OpenCamera("2D Cam", 1, CameraEaseStates.Linear);
                         rb.freezeRotation = true;
                         // rb.constraints = RigidbodyConstraints.FreezePositionZ;
                         player3D.SetActive(false);
@@ -111,6 +114,8 @@ public class PlayerController : MonoBehaviour
                 sequence.Append(transform.DOMoveX(transform.position.x - 5f, 0.3f))
                 .Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
                 {
+                    CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);
+
                     Wall90 = false;
                     player2D.SetActive(false);
                     is2D = false;
@@ -130,6 +135,7 @@ public class PlayerController : MonoBehaviour
                 Sequence sequence = DOTween.Sequence();
                 sequence.Append(transform.DOMoveZ(transform.position.z - 1f, 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
                 {
+                    CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);
                     Wall90 = false;
                     player2D.SetActive(false);
                     is2D = false;
@@ -159,9 +165,11 @@ public class PlayerController : MonoBehaviour
     {
         if (!lockMovement && !is2D) // 3D controller
         {
-            Debug.Log("3D controller working");
-            Debug.Log("H: " + horizontal);
-            Debug.Log("V: " + vertical);
+            UIManager.instance.StatusText("3D", "No Wall");
+
+            UIManager.instance.HorizontalText(horizontal);  // STATUS CHECK
+            UIManager.instance.VerticalText(vertical);
+
 
             horizontal = Input.GetAxis("Horizontal");
             vertical = Input.GetAxis("Vertical");
@@ -176,10 +184,12 @@ public class PlayerController : MonoBehaviour
         }
         if (is2D)
         {
-            Debug.Log("is 2D working");
+            UIManager.instance.StatusText("2D", "Straight Wall");
+
             if (Wall90)
             {
-                Debug.Log("wall 90 Working"); //90 derece divarda gezirik
+
+                UIManager.instance.StatusText("2D", "90 Degree Wall");
 
                 horizontal2D = Input.GetAxis("Horizontal");
                 transform.position += new Vector3(0, 0, (horizontal2D * speed2D) * -1) * Time.deltaTime;
