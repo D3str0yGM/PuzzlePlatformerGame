@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {
+
             rb.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
             // anim.SetTrigger("Jump");
             isGround = false;
@@ -56,7 +57,6 @@ public class PlayerController : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 1f, layerMask))
             {
-
                 lockMovement = true;
                 Angle = 0f;
                 // JumpForce = 0f;
@@ -79,6 +79,8 @@ public class PlayerController : MonoBehaviour
                         Wall90 = true;
                         rb.constraints = RigidbodyConstraints.FreezePositionX;
                         sequence.Kill();
+                        FeedbackManager.Instance.ModeChanged.PlayFeedbacks();
+
 
 
 
@@ -99,6 +101,8 @@ public class PlayerController : MonoBehaviour
                         ParticleManager.instance.Play("Sparkle");
                         Wall90 = false;
                         sequence.Kill();
+                        FeedbackManager.Instance.ModeChanged.PlayFeedbacks();
+
 
                     }));
                 }
