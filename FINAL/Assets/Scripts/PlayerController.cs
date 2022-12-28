@@ -7,8 +7,11 @@ using UnityEngine.SceneManagement;
 using CASP.CameraManager;
 public class PlayerController : MonoBehaviour
 {
+    #region 3D Global
     [Header("Controller")] // *************************** Player Controller 3D ************************ 
     [SerializeField] float speed;
+    [SerializeField] float moveObjectspeed;
+
     [SerializeField] float JumpForce = 5f;
     float horizontal;
     float vertical;
@@ -22,8 +25,15 @@ public class PlayerController : MonoBehaviour
     bool lockMovement = false;
     [SerializeField] GameObject player3D;
     [SerializeField] LayerMask layerMask;
+    [SerializeField] Transform DetectTransform;
+    [SerializeField] private float DetectionRange = 1;
+    [SerializeField] LayerMask puzzleLayer;
+    Collider[] colliders;
+    bool moveObjectMode = false;
+    int EpressCount = 0;
+    #endregion
 
-
+    #region 2D  Global
     // *************************** Player Controller 2D ************************ 
     [Header("Player2D Controller")]
     [SerializeField] GameObject player2D;
@@ -34,6 +44,7 @@ public class PlayerController : MonoBehaviour
     private bool facingRight = true;
     bool is2D = false;
     bool Wall90;
+    #endregion
 
 
 
@@ -44,6 +55,38 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        colliders = Physics.OverlapSphere(DetectTransform.position, DetectionRange, puzzleLayer);
+        foreach (var hit in colliders)
+        {
+            #region Hold&Move Object
+            if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("Stone"))
+            {
+                EpressCount++;
+                switch (EpressCount)
+                {
+                    default:
+                        break;
+                    case 1:
+                        JumpForce = 0f;
+                        moveObjectMode = true;
+                        UIManager.instance.StatusText("3D, Move Object ", " ");
+                        hit.transform.SetParent(transform);
+                        Debug.Log("ON");
+                        break;
+                    case 2:
+                        JumpForce = 5f;
+                        moveObjectMode = false;
+                        UIManager.instance.StatusText("3D,No Move Object ", " ");
+                        hit.transform.parent = null;
+                        Debug.Log("OFF");
+                        EpressCount = 0;
+                        break;
+                }
+            }
+            #endregion
+
+        }
+        #region Jump
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {
 
@@ -51,7 +94,10 @@ public class PlayerController : MonoBehaviour
             // anim.SetTrigger("Jump");
             isGround = false;
         }
+        #endregion
+
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1f, Color.white);
+        #region Raycast Mode Change
         if (Input.GetKeyDown(KeyCode.E) && !is2D)
         {
             RaycastHit hit;
@@ -108,8 +154,9 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+        #endregion
 
-
+        #region Exit 2D
         if (Input.GetKeyDown(KeyCode.E) && is2D)
         {
             if (Wall90)
@@ -154,20 +201,14 @@ public class PlayerController : MonoBehaviour
             }
 
         }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene(0);
-        }
-
-
-
-
+        #endregion
 
     }
+
     private void FixedUpdate()
     {
-        if (!lockMovement && !is2D) // 3D controller
+        #region 3D controller
+        if (!lockMovement && !is2D && !moveObjectMode) // 3D controller
         {
             UIManager.instance.StatusText("3D", "No Wall");
 
@@ -186,6 +227,24 @@ public class PlayerController : MonoBehaviour
                 rb.MovePosition(transform.position + (Direction * speed * Time.deltaTime));
             }
         }
+
+
+        if (moveObjectMode)
+        {
+            horizontal = Input.GetAxis("Horizontal");
+            vertical = Input.GetAxis("Vertical");
+            Direction = new Vector3(horizontal, 0, vertical);
+            if (Direction.magnitude > 0.01f)
+            {
+                float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
+                // Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, SmoothTurnTime);
+                // transform.rotation = Quaternion.Euler(0, Angle, 0);
+                rb.MovePosition(transform.position + (Direction * moveObjectspeed * Time.deltaTime));
+            }
+        }
+        #endregion
+        #region 2D Controller
+
         if (is2D)
         {
             UIManager.instance.StatusText("2D", "Straight Wall");
@@ -223,6 +282,7 @@ public class PlayerController : MonoBehaviour
             }
 
         }
+        #endregion
     }
 
 

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wall
   - Ground
+  - Stone
   layers:
   - Default
   - TransparentFX
@@ -14,7 +15,7 @@ TagManager:
   - Water
   - UI
   - Wall2D
-  - 
+  - Interaction
   - 
   - 
   - 
