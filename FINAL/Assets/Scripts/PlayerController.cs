@@ -24,10 +24,10 @@ public class PlayerController : MonoBehaviour
     bool isGround;
     bool lockMovement = false;
     [SerializeField] GameObject player3D;
-    [SerializeField] LayerMask layerMask;
+    [SerializeField] LayerMask layerMask; //Raycast Layer
     [SerializeField] Transform DetectTransform;
-    [SerializeField] private float DetectionRange = 1;
-    [SerializeField] LayerMask puzzleLayer;
+    [SerializeField] private float DetectionRange = 3f;
+    [SerializeField] LayerMask puzzleLayer; //OverlapSphere Layer
     Collider[] colliders;
     bool moveObjectMode = false;
     int EpressCount = 0;
@@ -47,14 +47,26 @@ public class PlayerController : MonoBehaviour
     #endregion
 
 
+    // ********************************** TEST *********************************
+
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0.6f, 0f, 0f, 0.2f);
+        Gizmos.DrawSphere(DetectTransform.position, DetectionRange);
+
+    }
     void Update()
     {
+
+
+
+
         colliders = Physics.OverlapSphere(DetectTransform.position, DetectionRange, puzzleLayer);
         foreach (var hit in colliders)
         {
@@ -84,6 +96,28 @@ public class PlayerController : MonoBehaviour
                 }
             }
             #endregion
+
+            #region Lever
+            if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverBlade"))
+            {
+                Animator anim = hit.GetComponent<Animator>(); //Player Controller scriptidi bu foto
+                anim.SetBool("On", true);
+                PuzzleManager.instance.BladeKill();
+            }
+            #endregion
+
+            #region StoneBuildingButton
+
+            if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("StoneButton"))
+            {
+                GameObject buttonGo = hit.gameObject;
+                PuzzleManager.instance.ButtonPress(buttonGo);
+
+            }
+
+            #endregion
+
+
 
         }
         #region Jump

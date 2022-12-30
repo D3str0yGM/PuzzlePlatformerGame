@@ -7,6 +7,8 @@ TagManager:
   - Wall
   - Ground
   - Stone
+  - LeverBlade
+  - StoneButton
   layers:
   - Default
   - TransparentFX
