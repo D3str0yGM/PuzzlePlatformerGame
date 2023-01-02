@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject player3D;
     [SerializeField] LayerMask layerMask; //Raycast Layer
     [SerializeField] Transform DetectTransform;
-    [SerializeField] private float DetectionRange = 3f;
+    [SerializeField] private float DetectionRange;
     [SerializeField] LayerMask puzzleLayer; //OverlapSphere Layer
     Collider[] colliders;
     bool moveObjectMode = false;
@@ -40,13 +40,13 @@ public class PlayerController : MonoBehaviour
     float horizontal2D;
     float vertical2D;
     [SerializeField] float speed2D;
-    private bool facingRight = true;
+    private bool facingRight = false;
     bool is2D = false;
     bool Wall90;
     #endregion
 
 
-    // ********************************** TEST *********************************
+    // **********************************  Puzzle *********************************
 
 
     void Start()
@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
+
         colliders = Physics.OverlapSphere(DetectTransform.position, DetectionRange, puzzleLayer);
         foreach (var hit in colliders)
         {
@@ -112,10 +113,8 @@ public class PlayerController : MonoBehaviour
             #endregion
 
             #region Elevator
-            if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("Elevator"))
-            {
-                PuzzleManager.instance.ElevatorIn();
-            }
+
+
             #endregion
 
 
@@ -196,12 +195,18 @@ public class PlayerController : MonoBehaviour
 
                     }));
                 }
+
+                if (Input.GetKeyDown(KeyCode.E) && hit.transform.CompareTag("Elevator"))
+                {
+                    PuzzleManager.instance.ElevatorUp();
+
+                }
             }
         }
         #endregion
 
         #region Exit 2D
-        if (Input.GetKeyDown(KeyCode.E) && is2D)
+        if (Input.GetKeyDown(KeyCode.E) && is2D && !PuzzleManager.instance.isElevatorMoving)
         {
             JumpForce = 5f;
             isGround = true;

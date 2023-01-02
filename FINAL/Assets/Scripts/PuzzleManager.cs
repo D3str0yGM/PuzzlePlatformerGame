@@ -20,16 +20,10 @@ public class PuzzleManager : MonoBehaviour
 
 
     //******* Elevator Puzzle *******
-
+    public bool isElevatorMoving = false;
     [SerializeField] GameObject Elevator;
 
-
-
-
-
     public List<GameObject> buttonList;
-
-
     private void Awake()
     {
         if (instance == null)
@@ -43,7 +37,6 @@ public class PuzzleManager : MonoBehaviour
     {
         // BladeStart();
         // ElevatorIn();
-        
     }
 
     public void BladeStart()
@@ -118,28 +111,39 @@ public class PuzzleManager : MonoBehaviour
         }
     }
 
-    public void ElevatorIn()
+    public void ElevatorUp()
     {
-        Debug.Log("elev in");
+        isElevatorMoving = true;
         Sequence sequence = DOTween.Sequence();
-        
+
         float Pos = Elevator.transform.position.y;
 
-        sequence.AppendInterval(2f).Insert(2f,Elevator.transform.DOMoveY(Pos + 8f, 1f))
-        .Insert(3f,Elevator.transform.DOMoveX(Elevator.transform.position.x + 3.5f, 1f));
+        sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(Pos + 8f, 1f))
+        .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x + 3.5f, 1f));
+        sequence.Append(Elevator.transform.DOMoveY(8.3f, 1f)).
+        OnComplete(() =>
+        {
+            isElevatorMoving = false;
+        });
+
+
+
         // Pos += 8f;
         // sequence.AppendInterval(2f).Join(Elevator.transform.DOMoveY(Pos - 8f, 1f));
         // Pos -= 8f;
     }
 
-    
-    public void ElevatorOut()
+
+    public void ElevatorDown()
     {
-        Sequence sequence = DOTween.Sequence();
-        
-        float Pos = Elevator.transform.position.y;
-        sequence.AppendInterval(2f).Insert(2f,Elevator.transform.DOMoveX(Elevator.transform.position.x - 3.5f, 1f))
-        .Insert(3f,Elevator.transform.DOMoveY(Pos - 8f, 1f));
+        Debug.Log("Down");
+        // Sequence sequence = DOTween.Sequence();
+
+        // float Pos = Elevator.transform.position.y;
+        // sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveX(Elevator.transform.position.x - 3.5f, 1f))
+        // .Insert(3f, Elevator.transform.DOMoveY(Pos - 8f, 1f));
+
+
         // Pos += 8f;
         // sequence.AppendInterval(2f).Join(Elevator.transform.DOMoveY(Pos - 8f, 1f));
         // Pos -= 8f;
