@@ -6,17 +6,22 @@ using DG.Tweening;
 public class PuzzleManager : MonoBehaviour
 {
     public static PuzzleManager instance;
-
+    //******* Blade Puzzle *******
     [SerializeField] GameObject Blade;
     Sequence sequenceBladeMove;
     Sequence sequenceBlade;
 
 
-    //*** Button ***
+    //******* Button Stone Puzzle *******
     bool button1 = false;
     bool button2 = false;
     bool button3 = false;
     int PressCount = 3;
+
+
+    //******* Elevator Puzzle *******
+
+    [SerializeField] GameObject Elevator;
 
 
 
@@ -36,16 +41,19 @@ public class PuzzleManager : MonoBehaviour
 
     void Start()
     {
+        // BladeStart();
+        // ElevatorIn();
+        
+    }
+
+    public void BladeStart()
+    {
         sequenceBladeMove = DOTween.Sequence();
         sequenceBlade = DOTween.Sequence();
-
-
-
         sequenceBladeMove.Append(Blade.transform.DORotate(new Vector3(180, 0, 0), 0.5f)).
         SetLoops(-1, LoopType.Restart);
         sequenceBlade.Append(Blade.transform.DOMoveZ(Blade.transform.position.z - 6.49f, 1.2f)).SetLoops(-1, LoopType.Yoyo);
     }
-
     public void BladeKill()
     {
         var seq = DOTween.Sequence();
@@ -59,7 +67,7 @@ public class PuzzleManager : MonoBehaviour
     public void ButtonPress(GameObject Button)
     {
         buttonList.Add(Button);
-        Button.gameObject.layer = 1;
+        Button.gameObject.layer = 0;
         PressCount--;
         Button.transform.DOMoveY(Button.transform.position.y - .12f, .5f);
         if (Button.gameObject.name == "Stone Button 1")
@@ -101,6 +109,8 @@ public class PuzzleManager : MonoBehaviour
                 foreach (GameObject ButtonsInList in buttonList)
                 {
                     ButtonsInList.transform.DOMoveY(Button.transform.position.y + .12f, .5f);
+                    ButtonsInList.gameObject.layer = 7;
+
                 }
 
             });
@@ -108,4 +118,30 @@ public class PuzzleManager : MonoBehaviour
         }
     }
 
+    public void ElevatorIn()
+    {
+        Debug.Log("elev in");
+        Sequence sequence = DOTween.Sequence();
+        
+        float Pos = Elevator.transform.position.y;
+
+        sequence.AppendInterval(2f).Insert(2f,Elevator.transform.DOMoveY(Pos + 8f, 1f))
+        .Insert(3f,Elevator.transform.DOMoveX(Elevator.transform.position.x + 3.5f, 1f));
+        // Pos += 8f;
+        // sequence.AppendInterval(2f).Join(Elevator.transform.DOMoveY(Pos - 8f, 1f));
+        // Pos -= 8f;
+    }
+
+    
+    public void ElevatorOut()
+    {
+        Sequence sequence = DOTween.Sequence();
+        
+        float Pos = Elevator.transform.position.y;
+        sequence.AppendInterval(2f).Insert(2f,Elevator.transform.DOMoveX(Elevator.transform.position.x - 3.5f, 1f))
+        .Insert(3f,Elevator.transform.DOMoveY(Pos - 8f, 1f));
+        // Pos += 8f;
+        // sequence.AppendInterval(2f).Join(Elevator.transform.DOMoveY(Pos - 8f, 1f));
+        // Pos -= 8f;
+    }
 }
