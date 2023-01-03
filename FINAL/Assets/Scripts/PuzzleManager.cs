@@ -22,6 +22,8 @@ public class PuzzleManager : MonoBehaviour
     //******* Elevator Puzzle *******
     public bool isElevatorMoving = false;
     [SerializeField] GameObject Elevator;
+    public bool elUp;
+
 
     public List<GameObject> buttonList;
     private void Awake()
@@ -113,39 +115,43 @@ public class PuzzleManager : MonoBehaviour
 
     public void ElevatorUp()
     {
-        isElevatorMoving = true;
-        Sequence sequence = DOTween.Sequence();
-
-        float Pos = Elevator.transform.position.y;
-
-        sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(Pos + 8f, 1f))
-        .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x + 3.5f, 1f));
-        sequence.Append(Elevator.transform.DOMoveY(8.3f, 1f)).
-        OnComplete(() =>
+        if (!elUp)
         {
-            isElevatorMoving = false;
-        });
+            Debug.Log("Up");
 
+            elUp = true;
+            isElevatorMoving = true;
+            Sequence sequence = DOTween.Sequence();
 
+            float Pos = Elevator.transform.position.y;
 
-        // Pos += 8f;
-        // sequence.AppendInterval(2f).Join(Elevator.transform.DOMoveY(Pos - 8f, 1f));
-        // Pos -= 8f;
+            sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(Pos + 8f, 1f))
+            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x + 3.5f, 1f));
+            sequence.Append(Elevator.transform.DOMoveY(7.8f, 1f)).
+            OnComplete(() =>
+            {
+                isElevatorMoving = false;
+            });
+        }
     }
 
 
     public void ElevatorDown()
     {
-        Debug.Log("Down");
-        // Sequence sequence = DOTween.Sequence();
+        if (elUp)
+        {
+            isElevatorMoving = true;
+            Debug.Log("Down");
+            Sequence sequence = DOTween.Sequence();
 
-        // float Pos = Elevator.transform.position.y;
-        // sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveX(Elevator.transform.position.x - 3.5f, 1f))
-        // .Insert(3f, Elevator.transform.DOMoveY(Pos - 8f, 1f));
+            float Pos = Elevator.transform.position.y;
+            sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(9f, 1f))
+            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x - 4f, 1f))
+            .Insert(4f, Elevator.transform.DOMoveY(1.5f, 1f)).OnComplete(() =>
+            {
+                isElevatorMoving = false;
 
-
-        // Pos += 8f;
-        // sequence.AppendInterval(2f).Join(Elevator.transform.DOMoveY(Pos - 8f, 1f));
-        // Pos -= 8f;
+            });
+        }
     }
 }

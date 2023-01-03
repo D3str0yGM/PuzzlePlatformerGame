@@ -5,13 +5,13 @@ using DG.Tweening;
 using Particle;
 using UnityEngine.SceneManagement;
 using CASP.CameraManager;
+using CASP.SoundManager;
 public class PlayerController : MonoBehaviour
 {
     #region 3D Global
     [Header("Controller")] // *************************** Player Controller 3D ************************ 
     [SerializeField] float speed;
     [SerializeField] float moveObjectspeed;
-
     [SerializeField] float JumpForce = 5f;
     float horizontal;
     float vertical;
@@ -196,10 +196,14 @@ public class PlayerController : MonoBehaviour
                     }));
                 }
 
-                if (Input.GetKeyDown(KeyCode.E) && hit.transform.CompareTag("Elevator"))
+                if (Input.GetKeyDown(KeyCode.E) && hit.transform.CompareTag("Elevator") && !PuzzleManager.instance.elUp)
                 {
                     PuzzleManager.instance.ElevatorUp();
 
+                }
+                else
+                {
+                    PuzzleManager.instance.ElevatorDown();
                 }
             }
         }
@@ -292,9 +296,22 @@ public class PlayerController : MonoBehaviour
             Direction = new Vector3(horizontal, 0, vertical);
             if (Direction.magnitude > 0.01f)
             {
+                SoundManager.instance.Play("StoneDrag", true);
                 float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
+                Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, 0.8f); //smooth turn time 0.5f
+                transform.rotation = Quaternion.Euler(0, Angle, 0);
                 rb.MovePosition(transform.position + (Direction * moveObjectspeed * Time.deltaTime));
             }
+            else
+            {
+                SoundManager.instance.Stop("StoneDrag");
+            }
+
+
+
+
+
+
         }
         #endregion
         #region 2D Controller
@@ -338,8 +355,6 @@ public class PlayerController : MonoBehaviour
         }
         #endregion
     }
-
-
 
     private void OnCollisionEnter(Collision other)
     {
