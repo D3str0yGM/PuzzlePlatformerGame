@@ -15,14 +15,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float JumpForce = 5f;
     float horizontal;
     float vertical;
-    float SmoothTurnTime = 0.1f;
+    float SmoothTurnTime = 0.04f;
     float CurrentTurnAngle;
     float Angle;
     Vector3 Direction;
     Rigidbody rb;
     [SerializeField] Animator anim;
     bool isGround;
-    bool lockMovement = false;
+    [HideInInspector]
+    public bool lockMovement = false;
     [SerializeField] GameObject player3D;
     [SerializeField] LayerMask layerMask; //Raycast Layer
     [SerializeField] Transform DetectTransform;
@@ -47,7 +48,7 @@ public class PlayerController : MonoBehaviour
 
 
     // **********************************  Puzzle *********************************
-
+    bool LeverBladeUsed = false;
 
     void Start()
     {
@@ -69,6 +70,7 @@ public class PlayerController : MonoBehaviour
             #region Hold&Move Object
             if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("Stone"))
             {
+                anim.SetFloat("Run", 0f);
                 EpressCount++;
                 switch (EpressCount)
                 {
@@ -97,10 +99,17 @@ public class PlayerController : MonoBehaviour
             #endregion
 
             #region Lever
-            if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverBlade"))
+            if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverBlade") && !LeverBladeUsed)
             {
-                Animator anim = hit.GetComponent<Animator>(); //Player Controller scriptidi bu foto
-                anim.SetBool("On", true);
+                anim.SetFloat("Run", 0f);
+                LeverBladeUsed = true;
+                lockMovement = true;
+                Sequence PlayerTransformCorrection = DOTween.Sequence();
+                transform.DOMove(new Vector3(hit.transform.position.x - 1.04f, 0f, hit.transform.position.z), .7f);
+                PlayerTransformCorrection.Append(transform.DORotate(new Vector3(0, 90, 0), 0.7f));
+                anim.SetTrigger("Lever");
+                Animator animLever = hit.GetComponent<Animator>();
+                animLever.SetBool("On", true);
                 PuzzleManager.instance.BladeKill();
             }
             #endregion
@@ -114,32 +123,26 @@ public class PlayerController : MonoBehaviour
             }
 
             #endregion
-
-            #region Elevator
-
-
-            #endregion
-
-
         }
+
         #region Jump
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {
-
             rb.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
-            // anim.SetTrigger("Jump");
+            anim.SetTrigger("Jump");
             isGround = false;
         }
         #endregion
 
+        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 2f, Color.white);
 
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1f, Color.white);
         #region Enter2D
         if (Input.GetKeyDown(KeyCode.E) && !is2D)
         {
             RaycastHit hit;
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 1f, layerMask))
             {
+                Debug.Log(hit.transform.gameObject.name);
                 // transform.SetParent(hit.transform.parent);
                 if (hit.transform.parent == null)
                 {
@@ -284,15 +287,16 @@ public class PlayerController : MonoBehaviour
             Direction = new Vector3(horizontal, 0, vertical);
             if (Direction.magnitude > 0.01f)
             {
+                float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
+                Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, SmoothTurnTime);
+                transform.rotation = Quaternion.Euler(0, Angle, 0);
+                rb.MovePosition(transform.position + (Direction.normalized * speed * Time.deltaTime));
                 anim.SetFloat("Run", Direction.magnitude);
                 if (isGround)
                 {
                     SoundManager.instance.PlayStepSound();
                 }
-                float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
-                Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, SmoothTurnTime);
-                transform.rotation = Quaternion.Euler(0, Angle, 0);
-                rb.MovePosition(transform.position + (Direction.normalized * speed * Time.deltaTime));
+
             }
         }
 
@@ -382,4 +386,7 @@ public class PlayerController : MonoBehaviour
         player2D.transform.localScale = currentScale;
         facingRight = !facingRight;
     }
+
+
+
 }
