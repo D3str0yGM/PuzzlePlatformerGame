@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     float Angle;
     Vector3 Direction;
     Rigidbody rb;
-    Animator anim;
+    [SerializeField] Animator anim;
     bool isGround;
     bool lockMovement = false;
     [SerializeField] GameObject player3D;
@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
                     default:
                         break;
                     case 1:
+                        anim.SetBool("MoveIdle", true);
                         JumpForce = 0f;
                         moveObjectMode = true;
                         UIManager.instance.StatusText("3D, Move Object ", " ");
@@ -82,6 +83,8 @@ public class PlayerController : MonoBehaviour
                         Debug.Log("ON");
                         break;
                     case 2:
+                        anim.SetBool("MoveIdle", false);
+                        SoundManager.instance.Play("StonePut", false);
                         JumpForce = 5f;
                         moveObjectMode = false;
                         UIManager.instance.StatusText("3D,No Move Object ", " ");
@@ -281,29 +284,38 @@ public class PlayerController : MonoBehaviour
             Direction = new Vector3(horizontal, 0, vertical);
             if (Direction.magnitude > 0.01f)
             {
+                anim.SetFloat("Run", Direction.magnitude);
+                if (isGround)
+                {
+                    SoundManager.instance.PlayStepSound();
+                }
                 float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
                 Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, SmoothTurnTime);
                 transform.rotation = Quaternion.Euler(0, Angle, 0);
-                rb.MovePosition(transform.position + (Direction * speed * Time.deltaTime));
+                rb.MovePosition(transform.position + (Direction.normalized * speed * Time.deltaTime));
             }
         }
 
 
         if (moveObjectMode)
         {
-            horizontal = Input.GetAxis("Horizontal");
-            vertical = Input.GetAxis("Vertical");
+
+            anim.SetBool("MoveIdle", true);
+            horizontal = -Input.GetAxis("Horizontal");
+            vertical = -Input.GetAxis("Vertical");
             Direction = new Vector3(horizontal, 0, vertical);
             if (Direction.magnitude > 0.01f)
             {
+                anim.SetBool("Move", true);
                 SoundManager.instance.Play("StoneDrag", true);
                 float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
                 Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, 0.8f); //smooth turn time 0.5f
                 transform.rotation = Quaternion.Euler(0, Angle, 0);
-                rb.MovePosition(transform.position + (Direction * moveObjectspeed * Time.deltaTime));
+                rb.MovePosition(transform.position - (Direction * moveObjectspeed * Time.deltaTime));
             }
             else
             {
+                anim.SetBool("Move", false);
                 SoundManager.instance.Stop("StoneDrag");
             }
 
