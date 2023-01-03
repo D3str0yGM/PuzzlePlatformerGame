@@ -10,6 +10,10 @@ public class TransformCorrection : MonoBehaviour
         transform.localPosition = new Vector3(0, 0, 0);
         PlayerScript.lockMovement = false;
     }
+    public void CorrectionMain()
+    {
+        transform.localPosition = new Vector3(0, 0, 0);
+    }
 
     
 

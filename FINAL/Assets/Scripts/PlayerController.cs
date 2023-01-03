@@ -86,6 +86,7 @@ public class PlayerController : MonoBehaviour
                         break;
                     case 2:
                         anim.SetBool("MoveIdle", false);
+                        anim.SetBool("Move", false);
                         SoundManager.instance.Play("StonePut", false);
                         JumpForce = 5f;
                         moveObjectMode = false;
@@ -305,12 +306,15 @@ public class PlayerController : MonoBehaviour
         {
 
             anim.SetBool("MoveIdle", true);
+            anim.SetBool("Move", false);
             horizontal = -Input.GetAxis("Horizontal");
             vertical = -Input.GetAxis("Vertical");
             Direction = new Vector3(horizontal, 0, vertical);
             if (Direction.magnitude > 0.01f)
             {
                 anim.SetBool("Move", true);
+                anim.SetBool("MoveIdle", false);
+
                 SoundManager.instance.Play("StoneDrag", true);
                 float TargetAngle = Mathf.Atan2(Direction.x, Direction.z) * Mathf.Rad2Deg;
                 Angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, TargetAngle, ref CurrentTurnAngle, 0.8f); //smooth turn time 0.5f
