@@ -17,12 +17,15 @@ public class PuzzleManager : MonoBehaviour
     bool button2 = false;
     bool button3 = false;
     int PressCount = 3;
+    [SerializeField] GameObject GlassPlatform;
 
 
     //******* Elevator Puzzle *******
     public bool isElevatorMoving = false;
     [SerializeField] GameObject Elevator;
     public bool elUp;
+
+    public bool stoneDragBool1, stoneDragBool2, stoneDragBool3, stoneDragBool4 = false;
 
 
     public List<GameObject> buttonList;
@@ -40,7 +43,10 @@ public class PuzzleManager : MonoBehaviour
         // BladeStart();
         // ElevatorIn();
     }
-
+    private void Update()
+    {
+        
+    }
     public void BladeStart()
     {
         sequenceBladeMove = DOTween.Sequence();
@@ -67,29 +73,26 @@ public class PuzzleManager : MonoBehaviour
         Button.transform.DOMoveY(Button.transform.position.y - .12f, .5f);
         if (Button.gameObject.name == "Stone Button 1")
         {
-            Debug.Log(Button.gameObject.name);
             button1 = true;
         }
 
         if (Button.gameObject.name == "Stone Button 3" && button1)
         {
-            Debug.Log(Button.gameObject.name);
             button3 = true;
         }
 
         if (Button.gameObject.name == "Stone Button 2" && button3)
         {
-            Debug.Log(Button.gameObject.name);
             button2 = true;
         }
         if (button1 && button2 && button3)
         {
-            Debug.Log("UNLOCKED");
+            GlassPlatform.transform.DOMoveY(GlassPlatform.transform.position.y+2f,2f);
+            GlassPlatform.transform.DORotate(new Vector3(0,180,0),3f);
         }
 
         if (PressCount <= 0 && !button2)
         {
-            Debug.Log("LOCKED");
             button1 = false;
             button2 = false;
             button3 = false;
@@ -117,8 +120,6 @@ public class PuzzleManager : MonoBehaviour
     {
         if (!elUp)
         {
-            Debug.Log("Up");
-
             elUp = true;
             isElevatorMoving = true;
             Sequence sequence = DOTween.Sequence();
@@ -135,13 +136,11 @@ public class PuzzleManager : MonoBehaviour
         }
     }
 
-
     public void ElevatorDown()
     {
         if (elUp)
         {
             isElevatorMoving = true;
-            Debug.Log("Down");
             Sequence sequence = DOTween.Sequence();
 
             float Pos = Elevator.transform.position.y;
@@ -154,4 +153,18 @@ public class PuzzleManager : MonoBehaviour
             });
         }
     }
+
+public void DragStonePuzzleCheck()
+{
+    if (stoneDragBool1 && stoneDragBool2 && stoneDragBool3 && stoneDragBool4)
+        {
+            Debug.Log("Unlocked");
+        }
 }
+
+
+
+
+
+}
+

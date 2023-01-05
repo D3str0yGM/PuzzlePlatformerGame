@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [Header("Controller")] // *************************** Player Controller 3D ************************ 
     [SerializeField] float speed;
     [SerializeField] float moveObjectspeed;
-    [SerializeField] float JumpForce = 5f;
+    [SerializeField] float JumpForce;
     float horizontal;
     float vertical;
     float SmoothTurnTime = 0.04f;
@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject player3D;
     [SerializeField] LayerMask layerMask; //Raycast Layer
     [SerializeField] Transform DetectTransform;
+    [SerializeField] Transform RaycastTransform;
     [SerializeField] private float DetectionRange;
     [SerializeField] LayerMask puzzleLayer; //OverlapSphere Layer
     Collider[] colliders;
@@ -82,17 +83,15 @@ public class PlayerController : MonoBehaviour
                         moveObjectMode = true;
                         UIManager.instance.StatusText("3D, Move Object ", " ");
                         hit.transform.SetParent(transform);
-                        Debug.Log("ON");
                         break;
                     case 2:
                         anim.SetBool("MoveIdle", false);
                         anim.SetBool("Move", false);
                         SoundManager.instance.Play("StonePut", false);
-                        JumpForce = 5f;
+                        JumpForce = 3f;
                         moveObjectMode = false;
                         UIManager.instance.StatusText("3D,No Move Object ", " ");
                         hit.transform.parent = null;
-                        Debug.Log("OFF");
                         EpressCount = 0;
                         break;
                 }
@@ -129,9 +128,9 @@ public class PlayerController : MonoBehaviour
         #region Jump
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {
-            rb.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
-            anim.SetTrigger("Jump");
             isGround = false;
+            rb.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+            anim.SetBool("Jump", true);
         }
         #endregion
 
@@ -141,10 +140,8 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E) && !is2D)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 1f, layerMask))
+            if (Physics.Raycast(RaycastTransform.position, RaycastTransform.TransformDirection(Vector3.forward), out hit, 1f, layerMask))
             {
-                Debug.Log(hit.transform.gameObject.name);
-                // transform.SetParent(hit.transform.parent);
                 if (hit.transform.parent == null)
                 {
                     transform.SetParent(hit.transform);
@@ -174,12 +171,9 @@ public class PlayerController : MonoBehaviour
                         player2D.SetActive(true);
                         Wall90 = true;
                         rb.constraints = RigidbodyConstraints.FreezePositionX;
+                        rb.freezeRotation = true;
                         sequence.Kill();
                         FeedbackManager.Instance.ModeChanged.PlayFeedbacks();
-
-
-
-
                     }));
                 }
                 else  //                                                                          wall 0;
@@ -198,8 +192,6 @@ public class PlayerController : MonoBehaviour
                         Wall90 = false;
                         sequence.Kill();
                         FeedbackManager.Instance.ModeChanged.PlayFeedbacks();
-
-
                     }));
                 }
 
@@ -219,7 +211,6 @@ public class PlayerController : MonoBehaviour
         #region Exit 2D
         if (Input.GetKeyDown(KeyCode.E) && is2D && !PuzzleManager.instance.isElevatorMoving)
         {
-            JumpForce = 5f;
             isGround = true;
             transform.parent = null;
 
@@ -236,10 +227,14 @@ public class PlayerController : MonoBehaviour
                     is2D = false;
                     rb.isKinematic = false;
                     lockMovement = false;
+                    rb.constraints = RigidbodyConstraints.None;
+                    rb.freezeRotation = false;
+                    rb.constraints = RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
 
                     player3D.SetActive(true);
                     Angle = 1f;
-                    speed = 5f;
+                    speed = 3.2f;
+                    JumpForce = 3f;
                     sequence.Kill();
 
                 });
@@ -253,6 +248,7 @@ public class PlayerController : MonoBehaviour
                     Wall90 = false;
                     player2D.SetActive(false);
                     is2D = false;
+                    rb.constraints = RigidbodyConstraints.None;
                     rb.freezeRotation = false;
                     rb.isKinematic = false;
                     rb.constraints = RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
@@ -261,7 +257,7 @@ public class PlayerController : MonoBehaviour
                     lockMovement = false;
                     player3D.SetActive(true);
                     Angle = 1f;
-                    speed = 5f;
+                    speed = 3.2f;
                     sequence.Kill();
 
                 });
@@ -376,11 +372,20 @@ public class PlayerController : MonoBehaviour
         #endregion
     }
 
-    private void OnCollisionEnter(Collision other)
+    // private void OnCollisionEnter(Collision other)
+    // {
+    //     if (other.transform.CompareTag("Ground"))
+    //     {
+    //         isGround = true;
+    //         anim.SetBool("Jump", false);
+    //     }
+    // }
+    private void OnTriggerEnter(Collider other)
     {
         if (other.transform.CompareTag("Ground"))
         {
             isGround = true;
+            anim.SetBool("Jump", false);
         }
     }
     public void FlipX()
