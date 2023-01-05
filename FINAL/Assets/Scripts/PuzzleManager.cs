@@ -40,8 +40,7 @@ public class PuzzleManager : MonoBehaviour
 
     void Start()
     {
-        // BladeStart();
-        // ElevatorIn();
+        BladeStart();
     }
     private void Update()
     {
