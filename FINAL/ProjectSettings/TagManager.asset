@@ -10,6 +10,7 @@ TagManager:
   - LeverBlade
   - StoneButton
   - Elevator
+  - LeverWall
   layers:
   - Default
   - TransparentFX

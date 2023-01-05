@@ -50,6 +50,8 @@ public class PlayerController : MonoBehaviour
 
     // **********************************  Puzzle *********************************
     bool LeverBladeUsed = false;
+    bool LeverWallUsed = false;
+
 
     void Start()
     {
@@ -101,6 +103,7 @@ public class PlayerController : MonoBehaviour
             #region Lever
             if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverBlade") && !LeverBladeUsed)
             {
+                rb.isKinematic = true;
                 anim.SetFloat("Run", 0f);
                 LeverBladeUsed = true;
                 lockMovement = true;
@@ -110,6 +113,32 @@ public class PlayerController : MonoBehaviour
                 anim.SetTrigger("Lever");
                 Animator animLever = hit.GetComponent<Animator>();
                 animLever.SetBool("On", true);
+                PlayerTransformCorrection.AppendInterval(2f).OnComplete(() =>
+                {
+                    rb.isKinematic = false;
+                });
+                PuzzleManager.instance.BladeKill();
+            }
+            #endregion
+
+
+            #region LeverWall
+            if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverWall") && !LeverWallUsed)
+            {
+                rb.isKinematic = true;
+                anim.SetFloat("Run", 0f);
+                LeverBladeUsed = true;
+                lockMovement = true;
+                Sequence PlayerTransformCorrection = DOTween.Sequence();
+                transform.DOMove(new Vector3(hit.transform.position.x - 1.04f, 0f, hit.transform.position.z), .7f);
+                PlayerTransformCorrection.Append(transform.DORotate(new Vector3(0, 90, 0), 0.7f));
+                anim.SetTrigger("Lever");
+                Animator animLever = hit.GetComponent<Animator>();
+                animLever.SetBool("On", true);
+                PlayerTransformCorrection.AppendInterval(2f).OnComplete(() =>
+               {
+                   rb.isKinematic = false;
+               });
                 PuzzleManager.instance.BladeKill();
             }
             #endregion
