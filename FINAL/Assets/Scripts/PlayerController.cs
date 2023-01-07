@@ -103,6 +103,7 @@ public class PlayerController : MonoBehaviour
             #region Lever
             if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverBlade") && !LeverBladeUsed)
             {
+                JumpForce = 0;
                 rb.isKinematic = true;
                 anim.SetFloat("Run", 0f);
                 LeverBladeUsed = true;
@@ -113,14 +114,14 @@ public class PlayerController : MonoBehaviour
                 anim.SetTrigger("Lever");
                 Animator animLever = hit.GetComponent<Animator>();
                 animLever.SetBool("On", true);
-                PlayerTransformCorrection.AppendInterval(2f).OnComplete(() =>
+                PlayerTransformCorrection.AppendInterval(4f).OnComplete(() =>
                 {
                     rb.isKinematic = false;
+                    JumpForce = 3f;
                 });
                 PuzzleManager.instance.BladeKill();
             }
             #endregion
-
 
             #region LeverWall
             if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverWall") && !LeverWallUsed)
@@ -139,7 +140,7 @@ public class PlayerController : MonoBehaviour
                {
                    rb.isKinematic = false;
                });
-                PuzzleManager.instance.BladeKill();
+                PuzzleManager.instance.Wallin();
             }
             #endregion
 
@@ -152,6 +153,18 @@ public class PlayerController : MonoBehaviour
             }
 
             #endregion
+
+            #region Collectable
+            if (hit.transform.CompareTag("Collectable"))
+            {
+                hit.GetComponent<BoxCollider>().enabled = false;
+                hit.transform.DOJump(transform.position, 2, 1, 0.2f).OnComplete(() =>
+                {
+                    hit.gameObject.SetActive(false);
+                });
+            }
+            #endregion
+
         }
 
         #region Jump
@@ -401,14 +414,6 @@ public class PlayerController : MonoBehaviour
         #endregion
     }
 
-    // private void OnCollisionEnter(Collision other)
-    // {
-    //     if (other.transform.CompareTag("Ground"))
-    //     {
-    //         isGround = true;
-    //         anim.SetBool("Jump", false);
-    //     }
-    // }
     private void OnTriggerEnter(Collider other)
     {
         if (other.transform.CompareTag("Ground"))

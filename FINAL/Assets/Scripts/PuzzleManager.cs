@@ -6,29 +6,33 @@ using DG.Tweening;
 public class PuzzleManager : MonoBehaviour
 {
     public static PuzzleManager instance;
-    //******* Blade Puzzle *******
+    //******* Blade Puzzle *************
     [SerializeField] GameObject Blade;
     Sequence sequenceBladeMove;
     Sequence sequenceBlade;
 
 
-    //******* Button Stone Puzzle *******
+    //******* Button Stone Puzzle *************
     bool button1 = false;
     bool button2 = false;
     bool button3 = false;
     int PressCount = 3;
-    [SerializeField] GameObject GlassPlatform;
+    [SerializeField] private GameObject GlassPlatform;
 
 
-    //******* Elevator Puzzle *******
+    //******* Elevator Puzzle ************
     public bool isElevatorMoving = false;
-    [SerializeField] GameObject Elevator;
+    [SerializeField] private GameObject Elevator;
     public bool elUp;
 
+    // ******* Wall Puzzle ***************
+    [SerializeField] private GameObject PuzzleWall;
+    [HideInInspector]
     public bool stoneDragBool1, stoneDragBool2, stoneDragBool3, stoneDragBool4 = false;
-
-
+ 
+    public bool item1, item2, item3, item4, item5 = false;
     public List<GameObject> buttonList;
+
     private void Awake()
     {
         if (instance == null)
@@ -37,14 +41,9 @@ public class PuzzleManager : MonoBehaviour
             Destroy(gameObject);
 
     }
-
     void Start()
     {
         BladeStart();
-    }
-    private void Update()
-    {
-        
     }
     public void BladeStart()
     {
@@ -66,7 +65,6 @@ public class PuzzleManager : MonoBehaviour
     }
     public void ButtonPress(GameObject Button)
     {
-        buttonList.Add(Button);
         Button.gameObject.layer = 0;
         PressCount--;
         Button.transform.DOMoveY(Button.transform.position.y - .12f, .5f);
@@ -74,22 +72,19 @@ public class PuzzleManager : MonoBehaviour
         {
             button1 = true;
         }
-
         if (Button.gameObject.name == "Stone Button 3" && button1)
         {
             button3 = true;
         }
-
         if (Button.gameObject.name == "Stone Button 2" && button3)
         {
             button2 = true;
         }
         if (button1 && button2 && button3)
         {
-            GlassPlatform.transform.DOMoveY(GlassPlatform.transform.position.y+2f,2f);
-            GlassPlatform.transform.DORotate(new Vector3(0,180,0),3f);
+            GlassPlatform.transform.DOMoveY(GlassPlatform.transform.position.y + 2f, 2f);
+            GlassPlatform.transform.DORotate(new Vector3(0, 180, 0), 3f);
         }
-
         if (PressCount <= 0 && !button2)
         {
             button1 = false;
@@ -100,21 +95,14 @@ public class PuzzleManager : MonoBehaviour
             seq.AppendInterval(1f).OnComplete(() =>
             {
                 PressCount = 3;
-
-
-
                 foreach (GameObject ButtonsInList in buttonList)
                 {
                     ButtonsInList.transform.DOMoveY(Button.transform.position.y + .12f, .5f);
                     ButtonsInList.gameObject.layer = 7;
-
                 }
-
             });
-
         }
     }
-
     public void ElevatorUp()
     {
         if (!elUp)
@@ -134,7 +122,6 @@ public class PuzzleManager : MonoBehaviour
             });
         }
     }
-
     public void ElevatorDown()
     {
         if (elUp)
@@ -152,15 +139,19 @@ public class PuzzleManager : MonoBehaviour
             });
         }
     }
-
-public void DragStonePuzzleCheck()
-{
-    if (stoneDragBool1 && stoneDragBool2 && stoneDragBool3 && stoneDragBool4)
+    public void DragStonePuzzleCheck()
+    {
+        if (stoneDragBool1 && stoneDragBool2 && stoneDragBool3 && stoneDragBool4)
         {
             Debug.Log("Unlocked");
         }
-}
+    }
+    public void Wallin()
+    {
+        Sequence Wallin = DOTween.Sequence();
+        Wallin.AppendInterval(1f).Insert(1f, PuzzleWall.transform.DOLocalMoveZ(PuzzleWall.transform.position.z + 65f, 1f));
 
+    }
 
 
 

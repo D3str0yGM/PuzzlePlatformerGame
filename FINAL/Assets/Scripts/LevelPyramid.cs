@@ -7,16 +7,22 @@ using DG.Tweening;
 public class LevelPyramid : MonoBehaviour
 {
     [SerializeField] Animator anim;
+    [SerializeField] private Transform TeleportDungeonTransform;
+    [SerializeField] GameObject Player;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && PuzzleManager.instance.item1 && PuzzleManager.instance.item2 && PuzzleManager.instance.item3 && PuzzleManager.instance.item4 && PuzzleManager.instance.item5)
         {
-            anim.SetTrigger("Fadein");
+            anim.SetBool("FadeIn",true);
             Sequence sequence = DOTween.Sequence();
-            sequence.AppendInterval(1.2f).OnComplete(() =>
+            sequence.AppendInterval(1f).OnComplete(() =>
             {
+            anim.SetBool("FadeIn",false);
+
+                Player.transform.position = TeleportDungeonTransform.position;
+
                 sequence.Kill();
-                SceneManager.LoadScene(1);
             });
         }
     }
