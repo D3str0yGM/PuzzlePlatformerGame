@@ -170,6 +170,7 @@ public class PlayerController : MonoBehaviour
         #region Jump
         if (Input.GetKeyDown(KeyCode.Space) && isGround)
         {
+            StartCoroutine(GroundTrue());
             isGround = false;
             rb.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
             anim.SetBool("Jump", true);
@@ -430,6 +431,11 @@ public class PlayerController : MonoBehaviour
         facingRight = !facingRight;
     }
 
-
+    IEnumerator GroundTrue()
+    {
+        yield return new WaitForSeconds(.5f);
+        isGround = true;
+        anim.SetBool("Jump",false);
+    }
 
 }
