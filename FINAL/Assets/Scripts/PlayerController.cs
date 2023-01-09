@@ -449,6 +449,15 @@ public class PlayerController : MonoBehaviour
             isGround = true;
             anim.SetBool("Jump", false);
         }
+
+        if (other.transform.CompareTag("Collectable"))
+        {
+            PuzzleManager.instance.ItemUnlocked(other.gameObject);
+            other.transform.DOJump(transform.position, 2, 1, 0.7f).OnComplete(() =>
+             {
+                 other.gameObject.SetActive(false);
+             });
+        }
     }
     public void FlipX()
     {

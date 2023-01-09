@@ -12,7 +12,7 @@ public class LevelPyramid : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && PuzzleManager.instance.item1 && PuzzleManager.instance.item2 && PuzzleManager.instance.item3 && PuzzleManager.instance.item4 && PuzzleManager.instance.item5)
+        if (other.CompareTag("Player") && PuzzleManager.instance.item1 && PuzzleManager.instance.item2 && PuzzleManager.instance.item3 && PuzzleManager.instance.item4)
         {
             anim.SetBool("FadeIn",true);
             Sequence sequence = DOTween.Sequence();
