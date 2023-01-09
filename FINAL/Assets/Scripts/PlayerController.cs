@@ -221,7 +221,7 @@ public class PlayerController : MonoBehaviour
                 }
                 else  //                                                                          wall 0;
                 {
-                    sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 0.04f), 0.05f))
+                    sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(transform.localScale.x, transform.localScale.y, 0.04f), 0.05f))
                     .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.55f, 0.3f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
@@ -260,7 +260,7 @@ public class PlayerController : MonoBehaviour
             if (Wall90)
             {
                 Sequence sequence = DOTween.Sequence();                                               // Exit wall 90
-                sequence.Append(transform.DOMoveX(transform.position.x - 5f, 0.3f))
+                sequence.Append(transform.DOMoveX(transform.position.x - 2f, 0.3f))
                 .Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
                 {
                     CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);

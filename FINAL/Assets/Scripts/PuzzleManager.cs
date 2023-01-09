@@ -113,9 +113,9 @@ public class PuzzleManager : MonoBehaviour
 
             float Pos = Elevator.transform.position.y;
 
-            sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(Pos + 8f, 1f))
-            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x + 3.5f, 1f));
-            sequence.Append(Elevator.transform.DOMoveY(7.8f, 1f)).
+            sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(Pos + 4.5f, 1f))
+            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x + 2.2f, 1f));
+            sequence.Append(Elevator.transform.DOMoveY(4.7f, 1f)).
             OnComplete(() =>
             {
                 isElevatorMoving = false;
@@ -130,8 +130,8 @@ public class PuzzleManager : MonoBehaviour
             Sequence sequence = DOTween.Sequence();
 
             float Pos = Elevator.transform.position.y;
-            sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(9f, 1f))
-            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x - 4f, 1f))
+            sequence.AppendInterval(2f).Insert(2f, Elevator.transform.DOMoveY(3.5f, 1f))
+            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x - 2.2f, 1f))
             .Insert(4f, Elevator.transform.DOMoveY(1.5f, 1f)).OnComplete(() =>
             {
                 isElevatorMoving = false;
