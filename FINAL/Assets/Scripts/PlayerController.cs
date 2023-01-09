@@ -38,7 +38,12 @@ public class PlayerController : MonoBehaviour
     #region 2D  Global
     // *************************** Player Controller 2D ************************ 
     [Header("Player2D Controller")]
+
+
+
     [SerializeField] GameObject player2D;
+    [SerializeField] GameObject player2Elevator;
+
     float horizontal2D;
     float vertical2D;
     [SerializeField] float speed2D;
@@ -193,6 +198,8 @@ public class PlayerController : MonoBehaviour
                 {
                     transform.SetParent(hit.transform.parent);
                 }
+
+
                 lockMovement = true;
                 Angle = 0f;
                 JumpForce = 0f;
@@ -230,11 +237,18 @@ public class PlayerController : MonoBehaviour
                         rb.isKinematic = true;
                         player3D.SetActive(false);
                         is2D = true;
-                        player2D.SetActive(true);
                         ParticleManager.instance.Play("Sparkle");
                         Wall90 = false;
                         sequence.Kill();
                         FeedbackManager.Instance.ModeChanged.PlayFeedbacks();
+                        if (hit.transform.CompareTag("Elevator"))
+                        {
+                            PuzzleManager.instance.ElevatorwithCharacter();
+                        }
+                        else
+                        {
+                            player2D.SetActive(true);
+                        }
                     }));
                 }
 
@@ -267,6 +281,9 @@ public class PlayerController : MonoBehaviour
 
                     Wall90 = false;
                     player2D.SetActive(false);
+                    PuzzleManager.instance.ElevatorwithoutCharacter();
+
+
                     is2D = false;
                     rb.isKinematic = false;
                     lockMovement = false;
@@ -290,6 +307,9 @@ public class PlayerController : MonoBehaviour
                     CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);
                     Wall90 = false;
                     player2D.SetActive(false);
+                    PuzzleManager.instance.ElevatorwithoutCharacter();
+
+
                     is2D = false;
                     rb.constraints = RigidbodyConstraints.None;
                     rb.freezeRotation = false;
@@ -383,10 +403,11 @@ public class PlayerController : MonoBehaviour
             {
 
                 UIManager.instance.StatusText("2D", "90 Degree Wall");
+                // float clampZ = Mathf.Clamp(transform.position.z,-9.946901f, 1.046956f);
 
                 horizontal2D = Input.GetAxis("Horizontal");
                 transform.position += new Vector3(0, 0, (horizontal2D * speed2D) * -1) * Time.deltaTime;
-
+                transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, -11.5f, 1f));
                 if (horizontal2D > 0 && facingRight)
                 {
                     FlipX();
@@ -397,9 +418,10 @@ public class PlayerController : MonoBehaviour
                 }
             }
             else
-            {
-                horizontal2D = Input.GetAxis("Horizontal"); //0 derece divarda gezirik
-                transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
+            { //wall 0
+
+                // horizontal2D = Input.GetAxis("Horizontal"); //0 derece divarda gezirik
+                // transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
 
                 if (horizontal2D > 0 && facingRight)
                 {
@@ -435,7 +457,7 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(.5f);
         isGround = true;
-        anim.SetBool("Jump",false);
+        anim.SetBool("Jump", false);
     }
 
 }

@@ -23,15 +23,23 @@ public class PuzzleManager : MonoBehaviour
     //******* Elevator Puzzle ************
     public bool isElevatorMoving = false;
     [SerializeField] private GameObject Elevator;
+    [SerializeField] private GameObject ElevatorModel;
+
+    
+
     public bool elUp;
+    [SerializeField] Material withChar;
+    [SerializeField] Material withoutChar;
 
     // ******* Wall Puzzle ***************
     [SerializeField] private GameObject PuzzleWall;
     [HideInInspector]
     public bool stoneDragBool1, stoneDragBool2, stoneDragBool3, stoneDragBool4 = false;
- 
+
     public bool item1, item2, item3, item4, item5 = false;
     public List<GameObject> buttonList;
+
+
 
     private void Awake()
     {
@@ -153,7 +161,16 @@ public class PuzzleManager : MonoBehaviour
 
     }
 
-
+    public void ElevatorwithCharacter()
+    {
+        ElevatorModel.GetComponent<Renderer>().material = withChar;
+        Debug.Log("with");
+    }
+    public void ElevatorwithoutCharacter()
+    {
+        Debug.Log("without");
+        ElevatorModel.GetComponent<Renderer>().material = withoutChar;
+    }
 
 
 }
