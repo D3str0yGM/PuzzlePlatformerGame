@@ -209,8 +209,8 @@ public class PlayerController : MonoBehaviour
                 Sequence sequence = DOTween.Sequence();
                 if (hit.transform.rotation.y > 0f) //                                            90 derece divar
                 {
-                    sequence.Append(transform.DORotate(new Vector3(0f, 180f + hit.transform.eulerAngles.y, 0f), 0.4f)).Insert(0.4f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.1f))
-                    .Insert(0.4f, transform.DOMoveX(transform.position.x + 0.55f, 0.3f).SetEase(Ease.InBack)
+                    sequence.Append(transform.DORotate(new Vector3(0f, 180f + hit.transform.eulerAngles.y, 0f), 0.4f)).Insert(0.4f, transform.DOScale(new Vector3(1f, 1f, 0.1f), 0.65f))
+                    .Insert(0.7f, transform.DOMoveX(transform.position.x + 0.55f, 0.6f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
                         CameraManager.instance.OpenCamera("2D 90 Degree Cam", 1, CameraEaseStates.Linear);
@@ -228,8 +228,8 @@ public class PlayerController : MonoBehaviour
                 }
                 else  //                                                                          wall 0;
                 {
-                    sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(transform.localScale.x, transform.localScale.y, 0.04f), 0.05f))
-                    .Insert(0.3f, transform.DOMoveZ(transform.position.z + 0.55f, 0.3f).SetEase(Ease.InBack)
+                    sequence.Append(transform.DORotate(new Vector3(0, 180, 0), 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(transform.localScale.x, transform.localScale.y, 0.04f), 0.4f))
+                    .Insert(0.5f, transform.DOMoveZ(transform.position.z + 0.55f, 0.5f).SetEase(Ease.InBack)
                     .OnComplete(() =>
                     {
                         CameraManager.instance.OpenCamera("2D Cam", 1, CameraEaseStates.Linear);
@@ -273,14 +273,16 @@ public class PlayerController : MonoBehaviour
 
             if (Wall90)
             {
+                player2D.SetActive(false);
+                player3D.SetActive(true);
+                CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);
+
                 Sequence sequence = DOTween.Sequence();                                               // Exit wall 90
-                sequence.Append(transform.DOMoveX(transform.position.x - 2f, 0.3f))
-                .Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
+                sequence.Append(transform.DOMoveX(transform.position.x - 1f, 0.3f))
+                .Insert(0.2f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.4f)).OnComplete(() =>
                 {
-                    CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);
 
                     Wall90 = false;
-                    player2D.SetActive(false);
                     PuzzleManager.instance.ElevatorwithoutCharacter();
 
 
@@ -291,39 +293,42 @@ public class PlayerController : MonoBehaviour
                     rb.freezeRotation = false;
                     rb.constraints = RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
 
-                    player3D.SetActive(true);
                     Angle = 1f;
                     speed = 3.2f;
-                    JumpForce = 3f;
+                    JumpForce = 3.6f;
                     sequence.Kill();
 
                 });
             }
             else                                                                                //Exit wall 0
             {
+                player2D.SetActive(false);
+                player3D.SetActive(true);
+                PuzzleManager.instance.ElevatorwithoutCharacter();
+
+                CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);
+
+                //sequence.Append(transform.DOMoveZ(transform.position.z - 1f, 0.5f)).Insert(0.5f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
+
                 Sequence sequence = DOTween.Sequence();
-                sequence.Append(transform.DOMoveZ(transform.position.z - 1f, 0.3f)).Insert(0.3f, transform.DOScale(new Vector3(1f, 1f, 1f), 0.05f)).OnComplete(() =>
-                {
-                    CameraManager.instance.OpenCamera("3D Cam", 1, CameraEaseStates.Linear);
-                    Wall90 = false;
-                    player2D.SetActive(false);
-                    PuzzleManager.instance.ElevatorwithoutCharacter();
+                sequence.Append(transform.DOScale(new Vector3(1f, 1f, 1f), 0.8f)).Join(transform.DOMoveZ(transform.position.z - 1f, 0.3f)).OnComplete(() =>
+               {
+                   Wall90 = false;
 
 
-                    is2D = false;
-                    rb.constraints = RigidbodyConstraints.None;
-                    rb.freezeRotation = false;
-                    rb.isKinematic = false;
-                    rb.constraints = RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
+                   is2D = false;
+                   rb.constraints = RigidbodyConstraints.None;
+                   rb.freezeRotation = false;
+                   rb.isKinematic = false;
+                   rb.constraints = RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
 
+                   JumpForce = 3.7f;
+                   lockMovement = false;
+                   Angle = 1f;
+                   speed = 3.2f;
+                   sequence.Kill();
 
-                    lockMovement = false;
-                    player3D.SetActive(true);
-                    Angle = 1f;
-                    speed = 3.2f;
-                    sequence.Kill();
-
-                });
+               });
             }
 
         }
@@ -407,7 +412,7 @@ public class PlayerController : MonoBehaviour
 
                 horizontal2D = Input.GetAxis("Horizontal");
                 transform.position += new Vector3(0, 0, (horizontal2D * speed2D) * -1) * Time.deltaTime;
-                transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, -11.5f, 1f));
+                transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, Mathf.Clamp(transform.localPosition.z, -11.5f, 1.5f));
                 if (horizontal2D > 0 && facingRight)
                 {
                     FlipX();
