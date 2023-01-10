@@ -12,6 +12,7 @@ TagManager:
   - Elevator
   - LeverWall
   - Collectable
+  - Ritual
   layers:
   - Default
   - TransparentFX

@@ -33,14 +33,12 @@ public class PlayerController : MonoBehaviour
     Collider[] colliders;
     bool moveObjectMode = false;
     int EpressCount = 0;
+
     #endregion
 
     #region 2D  Global
     // *************************** Player Controller 2D ************************ 
     [Header("Player2D Controller")]
-
-
-
     [SerializeField] GameObject player2D;
     [SerializeField] GameObject player2Elevator;
 
@@ -357,10 +355,8 @@ public class PlayerController : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, Angle, 0);
                 rb.MovePosition(transform.position + (Direction.normalized * speed * Time.deltaTime));
                 anim.SetFloat("Run", Direction.magnitude);
-                if (isGround)
-                {
-                    SoundManager.instance.PlayStepSound();
-                }
+
+
 
             }
         }
@@ -448,15 +444,26 @@ public class PlayerController : MonoBehaviour
         {
             isGround = true;
             anim.SetBool("Jump", false);
+            SoundManager.instance.Play("Land", false);
+            ParticleManager.instance.Play("Land");
         }
 
         if (other.transform.CompareTag("Collectable"))
         {
             PuzzleManager.instance.ItemUnlocked(other.gameObject);
-            other.transform.DOJump(transform.position, 2, 1, 0.7f).OnComplete(() =>
+            other.transform.DOJump(transform.position, 1, 1, 0.4f).OnComplete(() =>
              {
                  other.gameObject.SetActive(false);
+                 if (other.gameObject.name == "pisa")
+                 {
+                     ParticleManager.instance.Play("Portal");
+                 }
              });
+        }
+
+        if (other.transform.CompareTag("Ritual"))
+        {
+            PuzzleManager.instance.Ritual();
         }
     }
     public void FlipX()
@@ -473,5 +480,6 @@ public class PlayerController : MonoBehaviour
         isGround = true;
         anim.SetBool("Jump", false);
     }
+
 
 }

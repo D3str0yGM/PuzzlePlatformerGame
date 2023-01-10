@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-
+using Particle;
 public class PuzzleManager : MonoBehaviour
 {
     public static PuzzleManager instance;
@@ -42,6 +42,15 @@ public class PuzzleManager : MonoBehaviour
     //*********** Drag Stone Puzzle ***************
     [SerializeField] GameObject[] CollectableItems;
 
+    //************ DUNGEON ***************************
+    [SerializeField] List<GameObject> CollectedItems;
+    [SerializeField] GameObject pisaGO;
+    [SerializeField] GameObject ritualGO;
+
+    [SerializeField] Transform[] RitualTransform;
+
+
+
 
 
 
@@ -65,7 +74,7 @@ public class PuzzleManager : MonoBehaviour
         sequenceBlade = DOTween.Sequence();
         sequenceBladeMove.Append(Blade.transform.DORotate(new Vector3(180, 0, 0), 0.5f)).
         SetLoops(-1, LoopType.Restart);
-        sequenceBlade.Append(Blade.transform.DOMoveZ(Blade.transform.position.z - 6.49f, 1.2f)).SetLoops(-1, LoopType.Yoyo);
+        sequenceBlade.Append(Blade.transform.DOMoveZ(Blade.transform.position.z - 5.49f, 1.2f)).SetLoops(-1, LoopType.Yoyo);
     }
     public void BladeKill()
     {
@@ -161,7 +170,7 @@ public class PuzzleManager : MonoBehaviour
             Debug.Log("UNLOCKED ITEM1");
             CollectableItems[0].GetComponent<BoxCollider>().enabled = true;
             CollectableItems[0].transform.DOMoveY(CollectableItems[0].transform.position.y + 1f, 1f); //stone button scriptinden bool gelir
-            
+
         }
     }
     public void ItemUnlocked(GameObject item) //umumi collectable item 
@@ -201,6 +210,31 @@ public class PuzzleManager : MonoBehaviour
         ElevatorModel.GetComponent<Renderer>().material = withoutChar;
     }
 
+    public void Ritual()
+    {
+        int i = 0;
+        ritualGO.gameObject.GetComponent<BoxCollider>().enabled = false;
+        ParticleManager.instance.Play("Ritual");
+        Sequence RitualSequence = DOTween.Sequence();
+        Sequence PisaSpawn = DOTween.Sequence();
+        foreach (var item in CollectedItems)
+        {
+            item.SetActive(true);
+            RitualSequence.Append(item.transform.DOJump(RitualTransform[0+i].position, 1, 1, 0.6f)).Join(item.transform.DOScale(new Vector3(35f, 35f, 35f), 0.6f));
+            item.transform.parent = null;
+            i++;
+        }
+        PisaSpawn.AppendInterval(6f).OnComplete(() =>
+        {
+            ParticleManager.instance.Play("Pisa");
+            pisaGO.SetActive(true);
+            foreach (var item in CollectedItems)
+            {
+                item.SetActive(false);
+            }
+        });
+
+    }
 
 }
 

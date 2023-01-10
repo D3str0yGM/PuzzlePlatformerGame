@@ -68,10 +68,9 @@ namespace CASP.SoundManager
 
         public void PlayStepSound()
         {
-            if (!StepAudioSource.isPlaying)
-            {
-                StepAudioSource.PlayOneShot(StepSound[Random.Range(0,2)]);
-            }
+
+            StepAudioSource.PlayOneShot(StepSound[Random.Range(0, 2)]);
+
         }
 
     }
