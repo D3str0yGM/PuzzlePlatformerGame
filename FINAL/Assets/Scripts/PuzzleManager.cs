@@ -41,6 +41,7 @@ public class PuzzleManager : MonoBehaviour
     public List<GameObject> buttonList;
     //*********** Drag Stone Puzzle ***************
     [SerializeField] GameObject[] CollectableItems;
+    [SerializeField] GameObject StoneGO;
 
     //************ DUNGEON ***************************
     [SerializeField] List<GameObject> CollectedItems;
@@ -71,18 +72,19 @@ public class PuzzleManager : MonoBehaviour
     public void BladeStart()
     {
         sequenceBladeMove = DOTween.Sequence();
-        sequenceBlade = DOTween.Sequence();
+        // sequenceBlade = DOTween.Sequence();
         sequenceBladeMove.Append(Blade.transform.DORotate(new Vector3(180, 0, 0), 0.5f)).
         SetLoops(-1, LoopType.Restart);
-        sequenceBlade.Append(Blade.transform.DOMoveZ(Blade.transform.position.z - 5.49f, 1.2f)).SetLoops(-1, LoopType.Yoyo);
+        //sequenceBlade.Append(Blade.transform.DOMoveZ(Blade.transform.position.z - 4.4f, 1.2f)).SetLoops(-1, LoopType.Yoyo);
     }
     public void BladeKill()
     {
+        Blade.GetComponentInParent<BoxCollider>().enabled = false;
         var seq = DOTween.Sequence();
         seq.AppendInterval(1f).OnComplete(() =>
         {
             sequenceBladeMove.Kill();
-            sequenceBlade.Kill();
+            // sequenceBlade.Kill();
             seq.Kill();
         });
     }
@@ -105,8 +107,11 @@ public class PuzzleManager : MonoBehaviour
         }
         if (button1 && button2 && button3)
         {
-            GlassPlatform.transform.DOMoveY(GlassPlatform.transform.position.y + 1.4f, 2f);
-            GlassPlatform.transform.DOLocalRotate(new Vector3(0, 180, 0), 3f);
+            GlassPlatform.transform.DOMoveY(GlassPlatform.transform.position.y - 1.6f, 1f);
+            GlassPlatform.transform.DOLocalRotate(new Vector3(0, -124f, 0), 1.5f).OnComplete(() =>
+            {
+                GlassPlatform.transform.DOLocalMove(new Vector3(2.706399f,2.443f,-3.416861f),0.8f);
+            });
             CollectableItems[2].GetComponent<BoxCollider>().enabled = true;
         }
         if (PressCount <= 0 && !button2)
@@ -169,7 +174,7 @@ public class PuzzleManager : MonoBehaviour
         {
             Debug.Log("UNLOCKED ITEM1");
             CollectableItems[0].GetComponent<BoxCollider>().enabled = true;
-            CollectableItems[0].transform.DOMoveY(CollectableItems[0].transform.position.y + 1f, 1f); //stone button scriptinden bool gelir
+            StoneGO.transform.DOMoveY(StoneGO.transform.position.y + 1f, 1f); //stone button scriptinden bool gelir
 
         }
     }
@@ -220,7 +225,7 @@ public class PuzzleManager : MonoBehaviour
         foreach (var item in CollectedItems)
         {
             item.SetActive(true);
-            RitualSequence.Append(item.transform.DOJump(RitualTransform[0+i].position, 1, 1, 0.6f)).Join(item.transform.DOScale(new Vector3(35f, 35f, 35f), 0.6f));
+            RitualSequence.Append(item.transform.DOJump(RitualTransform[0 + i].position, 1, 1, 0.6f)).Join(item.transform.DOScale(new Vector3(35f, 35f, 35f), 0.6f));
             item.transform.parent = null;
             i++;
         }

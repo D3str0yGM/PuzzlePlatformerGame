@@ -49,7 +49,8 @@ public class PlayerController : MonoBehaviour
     bool is2D = false;
     bool Wall90;
     #endregion
-
+    [SerializeField] Animator anim2D;
+    bool isMoving2D = false;
 
     // **********************************  Puzzle *********************************
     bool LeverBladeUsed = false;
@@ -92,7 +93,6 @@ public class PlayerController : MonoBehaviour
                     case 2:
                         anim.SetBool("MoveIdle", false);
                         anim.SetBool("Move", false);
-                        SoundManager.instance.Play("StonePut", false);
                         JumpForce = 3f;
                         moveObjectMode = false;
                         UIManager.instance.StatusText("3D,No Move Object ", " ");
@@ -106,6 +106,11 @@ public class PlayerController : MonoBehaviour
             #region Lever
             if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverBlade") && !LeverBladeUsed)
             {
+                Sequence sequenceSound = DOTween.Sequence();
+                sequenceSound.AppendInterval(2f).OnComplete(() =>
+                {
+                    SoundManager.instance.Play("Lever", false);
+                });
                 JumpForce = 0;
                 rb.isKinematic = true;
                 anim.SetFloat("Run", 0f);
@@ -117,7 +122,7 @@ public class PlayerController : MonoBehaviour
                 anim.SetTrigger("Lever");
                 Animator animLever = hit.GetComponent<Animator>();
                 animLever.SetBool("On", true);
-                PlayerTransformCorrection.AppendInterval(4f).OnComplete(() =>
+                PlayerTransformCorrection.AppendInterval(3.5f).OnComplete(() =>
                 {
                     rb.isKinematic = false;
                     JumpForce = 3f;
@@ -129,19 +134,28 @@ public class PlayerController : MonoBehaviour
             #region LeverWall
             if (Input.GetKeyDown(KeyCode.E) && hit.CompareTag("LeverWall") && !LeverWallUsed)
             {
+                Sequence sequenceSound = DOTween.Sequence();
+                sequenceSound.AppendInterval(2f).OnComplete(() =>
+                {
+                    SoundManager.instance.Play("Lever", false);
+                });
+                JumpForce = 0;
                 rb.isKinematic = true;
                 anim.SetFloat("Run", 0f);
-                LeverBladeUsed = true;
+                LeverWallUsed = true;
                 lockMovement = true;
                 Sequence PlayerTransformCorrection = DOTween.Sequence();
                 transform.DOMove(new Vector3(hit.transform.position.x - 1.04f, 0f, hit.transform.position.z), .7f);
                 PlayerTransformCorrection.Append(transform.DORotate(new Vector3(0, 90, 0), 0.7f));
+                SoundManager.instance.Play("Lever", false);
                 anim.SetTrigger("Lever");
                 Animator animLever = hit.GetComponent<Animator>();
                 animLever.SetBool("On", true);
-                PlayerTransformCorrection.AppendInterval(2f).OnComplete(() =>
+                PlayerTransformCorrection.AppendInterval(3.5f).OnComplete(() =>
                {
                    rb.isKinematic = false;
+                   JumpForce = 3f;
+
                });
                 PuzzleManager.instance.Wallin();
             }
@@ -355,9 +369,6 @@ public class PlayerController : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, Angle, 0);
                 rb.MovePosition(transform.position + (Direction.normalized * speed * Time.deltaTime));
                 anim.SetFloat("Run", Direction.magnitude);
-
-
-
             }
         }
 
@@ -386,12 +397,6 @@ public class PlayerController : MonoBehaviour
                 anim.SetBool("Move", false);
                 SoundManager.instance.Stop("StoneDrag");
             }
-
-
-
-
-
-
         }
         #endregion
         #region 2D Controller
@@ -399,10 +404,8 @@ public class PlayerController : MonoBehaviour
         if (is2D)
         {
             UIManager.instance.StatusText("2D", "Straight Wall");
-
             if (Wall90)
             {
-
                 UIManager.instance.StatusText("2D", "90 Degree Wall");
                 // float clampZ = Mathf.Clamp(transform.position.z,-9.946901f, 1.046956f);
 
@@ -417,22 +420,39 @@ public class PlayerController : MonoBehaviour
                 {
                     FlipX();
                 }
-            }
-            else
-            { //wall 0
-
-                // horizontal2D = Input.GetAxis("Horizontal"); //0 derece divarda gezirik
-                // transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
-
-                if (horizontal2D > 0 && facingRight)
+                if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A))
                 {
-                    FlipX();
+                    isMoving2D = true;
                 }
-                if (horizontal2D < 0 && !facingRight)
+                else
                 {
-                    FlipX();
+                    isMoving2D = false;
                 }
+                if (isMoving2D)
+                {
+                    anim2D.SetBool("Run", true);
+                }
+                else
+                {
+                    anim2D.SetBool("Run", false);
+                }
+
             }
+            // else
+            // { //wall 0
+
+            //     // horizontal2D = Input.GetAxis("Horizontal"); //0 derece divarda gezirik
+            //     // transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
+
+            //     if (horizontal2D > 0 && facingRight)
+            //     {
+            //         FlipX();
+            //     }
+            //     if (horizontal2D < 0 && !facingRight)
+            //     {
+            //         FlipX();
+            //     }
+            // }
 
         }
         #endregion
@@ -451,6 +471,7 @@ public class PlayerController : MonoBehaviour
         if (other.transform.CompareTag("Collectable"))
         {
             PuzzleManager.instance.ItemUnlocked(other.gameObject);
+            SoundManager.instance.Play("Collect", false);
             other.transform.DOJump(transform.position, 1, 1, 0.4f).OnComplete(() =>
              {
                  other.gameObject.SetActive(false);
