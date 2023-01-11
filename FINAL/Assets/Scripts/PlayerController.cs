@@ -60,9 +60,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        CameraManager.instance.OpenCamera("3D Cam", 6f, CameraEaseStates.Linear);
-
-
     }
 
     private void OnDrawGizmos()
@@ -475,6 +472,7 @@ public class PlayerController : MonoBehaviour
         {
             PuzzleManager.instance.ItemUnlocked(other.gameObject);
             SoundManager.instance.Play("Collect", false);
+            UIManager.instance.PuzzlePieces(other.gameObject.name);
             other.transform.DOJump(transform.position, 1, 1, 0.4f).OnComplete(() =>
              {
                  other.gameObject.SetActive(false);

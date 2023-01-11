@@ -8,6 +8,8 @@ public class CutSceneManager : MonoBehaviour
 
     private void Start()
     {
+        CameraManager.instance.OpenCamera("3D Cam", 6f, CameraEaseStates.Linear);
+
 
     }
 
@@ -17,6 +19,7 @@ public class CutSceneManager : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             CameraManager.instance.OpenCamera("Cutscene2", 3f, CameraEaseStates.Linear);
+            transform.GetComponent<BoxCollider>().enabled = false;
             StartCoroutine(Back2PlayerCam());
         }
 
