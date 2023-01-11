@@ -5,6 +5,7 @@ using CASP.SoundManager;
 using Particle;
 public class TransformCorrection : MonoBehaviour
 {
+    [SerializeField] LayerMask GroundLayer;
     public PlayerController PlayerScript;
     public void Correction()
     {
@@ -17,8 +18,22 @@ public class TransformCorrection : MonoBehaviour
     }
     public void StepSoundAndParticle()
     {
-        SoundManager.instance.PlayStepSound();
         ParticleManager.instance.Play("Step");
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, 5f, GroundLayer))
+        {
+            if (hit.transform.gameObject.layer == 11)
+            {
+                SoundManager.instance.PlaySandStepSound();
+                Debug.Log(hit.transform.gameObject.layer);
+            }
+            if (hit.transform.gameObject.layer == 12 || hit.transform.gameObject.layer == 10)
+            {
+                SoundManager.instance.PlayStoneStepSound();
+                Debug.Log(hit.transform.gameObject.layer);
+            }
+
+        }
     }
 
 

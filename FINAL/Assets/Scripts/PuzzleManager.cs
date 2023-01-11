@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Particle;
+using CASP.SoundManager;
 public class PuzzleManager : MonoBehaviour
 {
     public static PuzzleManager instance;
@@ -231,19 +232,22 @@ public class PuzzleManager : MonoBehaviour
         }
         PisaSpawn.AppendInterval(6f).OnComplete(() =>
         {
-        ParticleManager.instance.Play("Pisa");
-        pisaGO.SetActive(true);
-        Sequence seq = DOTween.Sequence();
-        seq.AppendInterval(2f).OnComplete(()=>{
-            pisaGO.GetComponent<BoxCollider>().enabled = true;
+            ParticleManager.instance.Play("Pisa");
+            SoundManager.instance.Play("Portal",true);
+            
+            pisaGO.SetActive(true);
+            Sequence seq = DOTween.Sequence();
+            seq.AppendInterval(2f).OnComplete(() =>
+            {
+                pisaGO.GetComponent<BoxCollider>().enabled = true;
 
+            });
+
+            foreach (var item in CollectedItems)
+            {
+                item.SetActive(false);
+            }
         });
-
-        foreach (var item in CollectedItems)
-        {
-            item.SetActive(false);
-        }
-    });
 
     }
 

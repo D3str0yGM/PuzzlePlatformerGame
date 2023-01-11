@@ -10,8 +10,12 @@ namespace CASP.SoundManager
         public Sound[] sounds;
         [Header("Sound Pitch Value")]
         public float pitchValue = 1;
-        [SerializeField] List<AudioClip> StepSound;
+        [SerializeField] List<AudioClip> SandStepSound;
+        [SerializeField] List<AudioClip> StoneStepSound;
+
         [SerializeField] AudioSource StepAudioSource;
+        [SerializeField] AudioSource StoneAudioSource;
+
         public static SoundManager instance;
 
         private void Awake()
@@ -53,7 +57,6 @@ namespace CASP.SoundManager
                 if (!s.source.isPlaying)
                 {
                     s.source.PlayOneShot(s.Clip);
-
                 }
             }
         }
@@ -65,12 +68,15 @@ namespace CASP.SoundManager
                 return;
             s.source?.Stop();
         }
-
-        public void PlayStepSound()
+ 
+        public void PlaySandStepSound()
         {
+            StepAudioSource.PlayOneShot(SandStepSound[Random.Range(0, 19)]);
+        }
 
-            StepAudioSource.PlayOneShot(StepSound[Random.Range(0, 2)]);
-
+        public void PlayStoneStepSound()
+        {
+            StoneAudioSource.PlayOneShot(StoneStepSound[Random.Range(0, 2)]);
         }
 
     }
