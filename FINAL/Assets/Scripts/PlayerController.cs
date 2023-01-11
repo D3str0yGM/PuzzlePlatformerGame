@@ -60,6 +60,9 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        CameraManager.instance.OpenCamera("3D Cam", 6f, CameraEaseStates.Linear);
+
+
     }
 
     private void OnDrawGizmos()

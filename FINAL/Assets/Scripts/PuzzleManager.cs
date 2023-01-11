@@ -110,7 +110,7 @@ public class PuzzleManager : MonoBehaviour
             GlassPlatform.transform.DOMoveY(GlassPlatform.transform.position.y - 1.6f, 1f);
             GlassPlatform.transform.DOLocalRotate(new Vector3(0, -124f, 0), 1.5f).OnComplete(() =>
             {
-                GlassPlatform.transform.DOLocalMove(new Vector3(2.706399f,2.443f,-3.416861f),0.8f);
+                GlassPlatform.transform.DOLocalMove(new Vector3(2.706399f, 2.443f, -3.416861f), 0.8f);
             });
             CollectableItems[2].GetComponent<BoxCollider>().enabled = true;
         }
@@ -231,13 +231,19 @@ public class PuzzleManager : MonoBehaviour
         }
         PisaSpawn.AppendInterval(6f).OnComplete(() =>
         {
-            ParticleManager.instance.Play("Pisa");
-            pisaGO.SetActive(true);
-            foreach (var item in CollectedItems)
-            {
-                item.SetActive(false);
-            }
+        ParticleManager.instance.Play("Pisa");
+        pisaGO.SetActive(true);
+        Sequence seq = DOTween.Sequence();
+        seq.AppendInterval(2f).OnComplete(()=>{
+            pisaGO.GetComponent<BoxCollider>().enabled = true;
+
         });
+
+        foreach (var item in CollectedItems)
+        {
+            item.SetActive(false);
+        }
+    });
 
     }
 
