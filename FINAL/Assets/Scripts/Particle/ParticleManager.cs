@@ -13,9 +13,10 @@ namespace Particle
 
 
 
-
         private void Awake()
         {
+            DontDestroyOnLoad(transform.gameObject);
+
             if (instance == null)
             {
                 instance = this;

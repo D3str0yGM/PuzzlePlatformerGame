@@ -487,6 +487,12 @@ public class PlayerController : MonoBehaviour
         {
             PuzzleManager.instance.Ritual();
         }
+
+         if (other.transform.CompareTag("Portal"))
+        {
+            UIManager.instance.PlayVideo();
+        }
+
     }
     public void FlipX()
     {

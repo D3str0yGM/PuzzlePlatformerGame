@@ -4,7 +4,6 @@ using UnityEngine;
 using DG.Tweening;
 using TMPro;
 using UnityEngine.UI;
-using DG.Tweening;
 using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
@@ -34,6 +33,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject PlayPanel;
     [SerializeField] GameObject LoadingPanel;
     [SerializeField] Slider LoadingSlider;
+    [SerializeField] Image PausePanelImage;
+    bool vibrationActive = false;
+    [SerializeField] GameObject check;
+
+    [SerializeField] GameObject VideoPlayer;
+
+
+
 
 
 
@@ -46,10 +53,29 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            OpenPauseMenu();
+        }
+    }
+
     public void OpenPauseMenu()
     {
         PausePanel.SetActive(true);
-        PauseMenu.transform.DOScale(1f, 0.1f);
+        DOTween.To(() => PausePanelImage.color, x => PausePanelImage.color = x, new Color32(255, 255, 255, 212), 0.2f);
+        PauseMenu.transform.DOScale(1.13f, 0.15f);
+    }
+
+    public void Resume()
+    {
+        DOTween.To(() => PausePanelImage.color, x => PausePanelImage.color = x, new Color32(255, 255, 255, 0), 0.2f);
+        PauseMenu.transform.DOScale(0f, 0.15f);
+    }
+    public void Restart()
+    {
+        SceneManager.LoadScene(1);
     }
 
     public void StatusText(string Mode, string Wall)
@@ -101,6 +127,27 @@ public class UIManager : MonoBehaviour
         });
     }
 
+    public void Vibration()
+    {
+        vibrationActive = !vibrationActive;
+        if (vibrationActive)
+        {
+            check.SetActive(true);
+        }
+        if (!vibrationActive)
+        {
+            check.SetActive(false);
+        }
+    }
 
+    public void PlayVideo()
+    {
+        VideoPlayer.SetActive(true);
+        Sequence sequence = DOTween.Sequence();
+        sequence.AppendInterval(5f).OnComplete(() =>
+        {
+            SceneManager.LoadScene(0);
+        });
+    }
 
 }

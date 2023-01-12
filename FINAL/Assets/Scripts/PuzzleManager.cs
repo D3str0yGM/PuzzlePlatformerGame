@@ -237,7 +237,7 @@ public class PuzzleManager : MonoBehaviour
             
             pisaGO.SetActive(true);
             Sequence seq = DOTween.Sequence();
-            seq.AppendInterval(2f).OnComplete(() =>
+            seq.AppendInterval(3f).OnComplete(() =>
             {
                 pisaGO.GetComponent<BoxCollider>().enabled = true;
 
