@@ -6,19 +6,21 @@ using CASP.CameraManager;
 public class CutSceneManager : MonoBehaviour
 {
 
-    private void Start()
-    {
-        CameraManager.instance.OpenCamera("3D Cam", 6f, CameraEaseStates.Linear);
-
-
-    }
+  
 
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && transform.CompareTag("Cutscene2"))
         {
             CameraManager.instance.OpenCamera("Cutscene2", 3f, CameraEaseStates.Linear);
+            transform.GetComponent<BoxCollider>().enabled = false;
+            StartCoroutine(Back2PlayerCam());
+        }
+
+        if (other.CompareTag("Player") && transform.CompareTag("Cutscene3"))
+        {
+            CameraManager.instance.OpenCamera("Cutscene3", 3f, CameraEaseStates.Linear);
             transform.GetComponent<BoxCollider>().enabled = false;
             StartCoroutine(Back2PlayerCam());
         }

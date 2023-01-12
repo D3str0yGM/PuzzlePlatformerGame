@@ -82,12 +82,7 @@ public class PuzzleManager : MonoBehaviour
     {
         Blade.GetComponentInParent<BoxCollider>().enabled = false;
         var seq = DOTween.Sequence();
-        seq.AppendInterval(1f).OnComplete(() =>
-        {
-            sequenceBladeMove.Kill();
-            // sequenceBlade.Kill();
-            seq.Kill();
-        });
+        seq.AppendInterval(2f).Insert(2f,Blade.transform.DOMoveY(Blade.transform.position.y - 2f, 1f));
     }
     public void ButtonPress(GameObject Button)
     {
@@ -111,7 +106,7 @@ public class PuzzleManager : MonoBehaviour
             GlassPlatform.transform.DOMoveY(GlassPlatform.transform.position.y - 1.6f, 1f);
             GlassPlatform.transform.DOLocalRotate(new Vector3(0, -124f, 0), 1.5f).OnComplete(() =>
             {
-                GlassPlatform.transform.DOLocalMove(new Vector3(2.706399f, 2.443f, -3.416861f), 0.8f);
+                GlassPlatform.transform.DOLocalMove(new Vector3(2.706399f, 3f, -3.416861f), 0.8f);
             });
             CollectableItems[2].GetComponent<BoxCollider>().enabled = true;
         }

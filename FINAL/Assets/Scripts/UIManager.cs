@@ -5,6 +5,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using CASP.CameraManager;
 public class UIManager : MonoBehaviour
 {
 
@@ -39,6 +40,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] GameObject VideoPlayer;
 
+    [SerializeField] GameObject Skill2D;
+
+
 
 
 
@@ -64,7 +68,7 @@ public class UIManager : MonoBehaviour
     public void OpenPauseMenu()
     {
         PausePanel.SetActive(true);
-        DOTween.To(() => PausePanelImage.color, x => PausePanelImage.color = x, new Color32(255, 255, 255, 212), 0.2f);
+        DOTween.To(() => PausePanelImage.color, x => PausePanelImage.color = x, new Color32(255, 255, 255, 233), 0.2f);
         PauseMenu.transform.DOScale(1.13f, 0.15f);
     }
 
@@ -119,11 +123,15 @@ public class UIManager : MonoBehaviour
 
     public void Play()
     {
+
         PlayPanel.SetActive(false);
         LoadingPanel.SetActive(true);
         DOTween.To(() => LoadingSlider.value, x => LoadingSlider.value = x, 100, 2f).OnComplete(() =>
         {
-            SceneManager.LoadScene(1);
+            CameraManager.instance.OpenCamera("3D Cam", 6f, CameraEaseStates.Linear);
+            LoadingPanel.SetActive(false);
+
+
         });
     }
 
@@ -148,6 +156,13 @@ public class UIManager : MonoBehaviour
         {
             SceneManager.LoadScene(0);
         });
+    }
+
+    public void SkillZoom()
+    {
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(Skill2D.transform.DOScale(0.2517883f,0.2f)).Insert(0.3f,Skill2D.transform.DOScale(0.22231f,0.2f));
+
     }
 
 }

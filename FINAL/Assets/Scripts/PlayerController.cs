@@ -199,6 +199,7 @@ public class PlayerController : MonoBehaviour
         #region Enter2D
         if (Input.GetKeyDown(KeyCode.E) && !is2D)
         {
+            UIManager.instance.SkillZoom();
             RaycastHit hit;
             if (Physics.Raycast(RaycastTransform.position, RaycastTransform.TransformDirection(Vector3.forward), out hit, 1f, layerMask))
             {
