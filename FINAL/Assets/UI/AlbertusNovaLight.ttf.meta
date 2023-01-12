@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 475bd8c0bb7c3f648a02959fde21daa9
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Albertus Nova
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 43821dfc04b09004b8cebc95343b0060, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

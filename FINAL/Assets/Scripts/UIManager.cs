@@ -4,6 +4,8 @@ using UnityEngine;
 using DG.Tweening;
 using TMPro;
 using UnityEngine.UI;
+using DG.Tweening;
+using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
 
@@ -27,6 +29,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] List<Sprite> fullPuzzlePieces;
     [SerializeField] GameObject PiecePanel;
 
+
+
+    [SerializeField] GameObject PlayPanel;
+    [SerializeField] GameObject LoadingPanel;
+    [SerializeField] Slider LoadingSlider;
+
+
+
     public static UIManager instance;
     private void Awake()
     {
@@ -36,11 +46,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-
-
-    }
     public void OpenPauseMenu()
     {
         PausePanel.SetActive(true);
@@ -85,5 +90,17 @@ public class UIManager : MonoBehaviour
 
 
     }
+
+    public void Play()
+    {
+        PlayPanel.SetActive(false);
+        LoadingPanel.SetActive(true);
+        DOTween.To(() => LoadingSlider.value, x => LoadingSlider.value = x, 100, 2f).OnComplete(() =>
+        {
+            SceneManager.LoadScene(1);
+        });
+    }
+
+
 
 }

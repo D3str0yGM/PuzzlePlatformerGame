@@ -175,7 +175,7 @@ public class PuzzleManager : MonoBehaviour
         {
             Debug.Log("UNLOCKED ITEM1");
             CollectableItems[0].GetComponent<BoxCollider>().enabled = true;
-            StoneGO.transform.DOMoveY(StoneGO.transform.position.y + 1f, 1f); //stone button scriptinden bool gelir
+            StoneGO.transform.DOMoveY(StoneGO.transform.position.y + 1.2f, 1f); //stone button scriptinden bool gelir
 
         }
     }
