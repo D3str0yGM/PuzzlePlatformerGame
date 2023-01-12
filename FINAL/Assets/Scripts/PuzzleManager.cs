@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using Particle;
 using CASP.SoundManager;
+using CASP.CameraManager;
 public class PuzzleManager : MonoBehaviour
 {
     public static PuzzleManager instance;
@@ -82,7 +83,7 @@ public class PuzzleManager : MonoBehaviour
     {
         Blade.GetComponentInParent<BoxCollider>().enabled = false;
         var seq = DOTween.Sequence();
-        seq.AppendInterval(2f).Insert(2f,Blade.transform.DOMoveY(Blade.transform.position.y - 2f, 1f));
+        seq.AppendInterval(2f).Insert(2f, Blade.transform.DOMoveY(Blade.transform.position.y - 2f, 1f));
     }
     public void ButtonPress(GameObject Button)
     {
@@ -221,6 +222,7 @@ public class PuzzleManager : MonoBehaviour
         foreach (var item in CollectedItems)
         {
             item.SetActive(true);
+
             RitualSequence.Append(item.transform.DOJump(RitualTransform[0 + i].position, 1, 1, 0.6f)).Join(item.transform.DOScale(new Vector3(35f, 35f, 35f), 0.6f));
             item.transform.parent = null;
             i++;
@@ -228,8 +230,9 @@ public class PuzzleManager : MonoBehaviour
         PisaSpawn.AppendInterval(6f).OnComplete(() =>
         {
             ParticleManager.instance.Play("Pisa");
-            SoundManager.instance.Play("Portal",true);
-            
+            SoundManager.instance.Play("Portal", true);
+            CameraManager.instance.OpenCamera("3D Cam", 1f, CameraEaseStates.Linear);
+
             pisaGO.SetActive(true);
             Sequence seq = DOTween.Sequence();
             seq.AppendInterval(3f).OnComplete(() =>

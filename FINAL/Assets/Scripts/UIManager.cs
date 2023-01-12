@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using CASP.CameraManager;
+using CASP.SoundManager;
 public class UIManager : MonoBehaviour
 {
 
@@ -163,6 +164,11 @@ public class UIManager : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
         sequence.Append(Skill2D.transform.DOScale(0.2517883f,0.2f)).Insert(0.3f,Skill2D.transform.DOScale(0.22231f,0.2f));
 
+    }
+
+    public void PlayUISound()
+    {
+        SoundManager.instance.Play("UI",false);
     }
 
 }

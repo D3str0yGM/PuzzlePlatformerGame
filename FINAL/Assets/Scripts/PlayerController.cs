@@ -487,6 +487,7 @@ public class PlayerController : MonoBehaviour
         if (other.transform.CompareTag("Ritual"))
         {
             PuzzleManager.instance.Ritual();
+            CameraManager.instance.OpenCamera("RitualCam",1f,CameraEaseStates.Linear);
         }
 
          if (other.transform.CompareTag("Portal"))

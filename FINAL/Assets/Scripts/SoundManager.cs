@@ -40,6 +40,9 @@ namespace CASP.SoundManager
             }
         }
 
+private void Start() {
+    Play("Wind",true);
+}
 
 
         public void Play(string name, bool loop)
