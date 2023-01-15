@@ -26,8 +26,8 @@ public class UIManager : MonoBehaviour
 
 
     //******** PUZZLE PIECES *****************
-    [SerializeField] List<Image> emptyPuzzlePieces;
-    [SerializeField] List<Sprite> fullPuzzlePieces;
+    [SerializeField] List<GameObject> emptyPuzzlePieces;
+    [SerializeField] List<GameObject> fullPuzzlePieces;
     [SerializeField] GameObject PiecePanel;
 
 
@@ -104,19 +104,23 @@ public class UIManager : MonoBehaviour
         PiecePanel.SetActive(true);
         if (itemName == "item 1")
         {
-            emptyPuzzlePieces[0].sprite = fullPuzzlePieces[0];
+            emptyPuzzlePieces[0].SetActive(false);
+            fullPuzzlePieces[0].SetActive(true);
         }
         if (itemName == "item 2")
         {
-            emptyPuzzlePieces[1].sprite = fullPuzzlePieces[1];
+            emptyPuzzlePieces[1].SetActive(false);
+            fullPuzzlePieces[1].SetActive(true);
         }
         if (itemName == "item 3")
         {
-            emptyPuzzlePieces[2].sprite = fullPuzzlePieces[2];
+           emptyPuzzlePieces[2].SetActive(false);
+            fullPuzzlePieces[2].SetActive(true);
         }
         if (itemName == "item 4")
         {
-            emptyPuzzlePieces[3].sprite = fullPuzzlePieces[3];
+            emptyPuzzlePieces[3].SetActive(false);
+            fullPuzzlePieces[3].SetActive(true);
         }
 
 

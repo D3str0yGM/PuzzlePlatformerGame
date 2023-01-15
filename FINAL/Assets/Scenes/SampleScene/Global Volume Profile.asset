@@ -34,7 +34,7 @@ MonoBehaviour:
   highlightsEnd:
     m_OverrideState: 0
     m_Value: 1
---- !u!114 &-6659319306871463940
+--- !u!114 &-4078085107648943700
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,18 +74,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c01700fd266d6914ababb731e09af2eb, type: 3}
   m_Name: DepthOfField
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   mode:
     m_OverrideState: 1
     m_Value: 1
   gaussianStart:
     m_OverrideState: 1
-    m_Value: 5.4
+    m_Value: 25
   gaussianEnd:
     m_OverrideState: 1
-    m_Value: 2673
+    m_Value: 45
   gaussianMaxRadius:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   highQualitySampling:
     m_OverrideState: 0
@@ -121,10 +121,10 @@ MonoBehaviour:
   m_Name: Global Volume Profile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: -6659319306871463940}
   - {fileID: -8131575471464744715}
   - {fileID: 4961123956603055332}
   - {fileID: -3676274502637300107}
+  - {fileID: -4078085107648943700}
 --- !u!114 &4961123956603055332
 MonoBehaviour:
   m_ObjectHideFlags: 3
