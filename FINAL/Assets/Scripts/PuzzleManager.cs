@@ -152,6 +152,7 @@ public class PuzzleManager : MonoBehaviour
     {
         if (elUp)
         {
+            elUp = false;
             isElevatorMoving = true;
             Sequence sequence = DOTween.Sequence();
 

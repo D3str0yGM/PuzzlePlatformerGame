@@ -106,21 +106,51 @@ public class UIManager : MonoBehaviour
         {
             emptyPuzzlePieces[0].SetActive(false);
             fullPuzzlePieces[0].SetActive(true);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(fullPuzzlePieces[0].transform.DOScale(1.2f, 0.3f))
+            .Insert(0.3f, fullPuzzlePieces[0].transform.DOScale(1f, 0.3f))
+            .OnComplete(() =>
+        {
+            sequence.Kill();
+        });
         }
         if (itemName == "item 2")
         {
             emptyPuzzlePieces[1].SetActive(false);
             fullPuzzlePieces[1].SetActive(true);
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(fullPuzzlePieces[1].transform.DOScale(1.2f, 0.3f))
+            .Insert(0.3f, fullPuzzlePieces[1].transform.DOScale(1f, 0.3f))
+            .OnComplete(() =>
+        {
+            sequence.Kill();
+        });
         }
         if (itemName == "item 3")
         {
-           emptyPuzzlePieces[2].SetActive(false);
+            emptyPuzzlePieces[2].SetActive(false);
             fullPuzzlePieces[2].SetActive(true);
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(fullPuzzlePieces[2].transform.DOScale(1.2f, 0.3f))
+            .Insert(0.3f, fullPuzzlePieces[2].transform.DOScale(1f, 0.3f))
+            .OnComplete(() =>
+        {
+            sequence.Kill();
+        });
         }
         if (itemName == "item 4")
         {
             emptyPuzzlePieces[3].SetActive(false);
             fullPuzzlePieces[3].SetActive(true);
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(fullPuzzlePieces[3].transform.DOScale(1.2f, 0.3f))
+            .Insert(0.3f, fullPuzzlePieces[3].transform.DOScale(1f, 0.3f))
+            .OnComplete(() =>
+        {
+            sequence.Kill();
+        });
         }
 
 
@@ -166,13 +196,17 @@ public class UIManager : MonoBehaviour
     public void SkillZoom()
     {
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(Skill2D.transform.DOScale(0.2517883f,0.2f)).Insert(0.3f,Skill2D.transform.DOScale(0.22231f,0.2f));
+        sequence.Append(Skill2D.transform.DOScale(0.2517883f, 0.2f)).Insert(0.3f, Skill2D.transform.DOScale(0.22231f, 0.2f))
+        .OnComplete(() =>
+        {
+            sequence.Kill();
+        });
 
     }
 
     public void PlayUISound()
     {
-        SoundManager.instance.Play("UI",false);
+        SoundManager.instance.Play("UI", false);
     }
 
 }

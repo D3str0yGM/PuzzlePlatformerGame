@@ -6,7 +6,7 @@ using CASP.CameraManager;
 public class CutSceneManager : MonoBehaviour
 {
 
-  
+
 
 
     private void OnTriggerEnter(Collider other)
@@ -26,6 +26,15 @@ public class CutSceneManager : MonoBehaviour
         }
 
 
+        if (other.CompareTag("Player") && transform.gameObject.name == "Dungeon1Cam1")
+        {
+            CameraManager.instance.OpenCamera("Dungeon1Cam1", 0.5f, CameraEaseStates.Linear);
+        }
+        if (other.CompareTag("Player") && transform.gameObject.name == "Dungeon1Cam2")
+        {
+            CameraManager.instance.OpenCamera("Dungeon1Cam2", 0f, CameraEaseStates.Linear);
+            transform.GetComponent<BoxCollider>().enabled = false;
+        }
 
         IEnumerator Back2PlayerCam()
         {

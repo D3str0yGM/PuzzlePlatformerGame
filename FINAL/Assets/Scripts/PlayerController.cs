@@ -453,6 +453,22 @@ public class PlayerController : MonoBehaviour
                     {
                         FlipX();
                     }
+                     if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A))
+                {
+                    isMoving2D = true;
+                }
+                else
+                {
+                    isMoving2D = false;
+                }
+                if (isMoving2D)
+                {
+                    anim2D.SetBool("Run", true);
+                }
+                else
+                {
+                    anim2D.SetBool("Run", false);
+                }
                 }
             }
 
