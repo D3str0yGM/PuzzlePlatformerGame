@@ -140,7 +140,7 @@ public class PuzzleManager : MonoBehaviour
             float Pos = Elevator.transform.position.y;
 
             sequence.AppendInterval(3f).Insert(2f, Elevator.transform.DOMoveY(Pos + 4.5f, 1f))
-            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x + 2.2f, 1f));
+            .Insert(3f, Elevator.transform.DOMoveZ(Elevator.transform.position.z + 3.5f, 1f));
             sequence.Append(Elevator.transform.DOMoveY(4.9f, 1f)).
             OnComplete(() =>
             {
@@ -157,7 +157,7 @@ public class PuzzleManager : MonoBehaviour
 
             float Pos = Elevator.transform.position.y;
             sequence.AppendInterval(3f).Insert(2f, Elevator.transform.DOMoveY(5.2f, 1f))
-            .Insert(3f, Elevator.transform.DOMoveX(Elevator.transform.position.x - 2.2f, 1f))
+            .Insert(3f, Elevator.transform.DOMoveZ(Elevator.transform.position.z - 3.5f, 1f))
             .Insert(4f, Elevator.transform.DOMoveY(1.1f, 1f)).OnComplete(() =>
             {
                 isElevatorMoving = false;

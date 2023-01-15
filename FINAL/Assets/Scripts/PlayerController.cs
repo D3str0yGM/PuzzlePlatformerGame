@@ -268,7 +268,6 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.E) && hit.transform.CompareTag("Elevator") && !PuzzleManager.instance.elUp)
                 {
                     PuzzleManager.instance.ElevatorUp();
-
                 }
                 else
                 {
@@ -439,21 +438,23 @@ public class PlayerController : MonoBehaviour
                 }
 
             }
-            // else
-            // { //wall 0
+            else
+            { //wall 0
+                if (!PuzzleManager.instance.isElevatorMoving)
+                {
+                    horizontal2D = Input.GetAxis("Horizontal"); //0 derece divarda gezirik
+                    transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
 
-            //     // horizontal2D = Input.GetAxis("Horizontal"); //0 derece divarda gezirik
-            //     // transform.position += new Vector3(horizontal2D * speed2D, 0, 0) * Time.deltaTime;
-
-            //     if (horizontal2D > 0 && facingRight)
-            //     {
-            //         FlipX();
-            //     }
-            //     if (horizontal2D < 0 && !facingRight)
-            //     {
-            //         FlipX();
-            //     }
-            // }
+                    if (horizontal2D > 0 && facingRight)
+                    {
+                        FlipX();
+                    }
+                    if (horizontal2D < 0 && !facingRight)
+                    {
+                        FlipX();
+                    }
+                }
+            }
 
         }
         #endregion
@@ -487,10 +488,10 @@ public class PlayerController : MonoBehaviour
         if (other.transform.CompareTag("Ritual"))
         {
             PuzzleManager.instance.Ritual();
-            CameraManager.instance.OpenCamera("RitualCam",1f,CameraEaseStates.Linear);
+            CameraManager.instance.OpenCamera("RitualCam", 1f, CameraEaseStates.Linear);
         }
 
-         if (other.transform.CompareTag("Portal"))
+        if (other.transform.CompareTag("Portal"))
         {
             UIManager.instance.PlayVideo();
         }
